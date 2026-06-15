@@ -34,7 +34,9 @@ Die Firmen sind in drei Ampelstufen sortiert:
 
 ## Bedienung & Aktualisierung
 
-- **Tab-Navigation statt Scrollen:** sechs Bereiche (Wo wir stehen, Signalkette, Firmen, Use Cases, Frühindikatoren, Geopolitik) als sticky Tabs — immer nur eine Ansicht sichtbar, jeder Tab in eigener Farbe (cyan/blau/amber/grün/violett/rot).
+- **Tab-Navigation statt Scrollen:** sieben Bereiche (Wo wir stehen, Signalkette, Firmen, Use Cases, Frühindikatoren, Geopolitik, Compute) als sticky Tabs — immer nur eine Ansicht sichtbar, jeder Tab in eigener Farbe (cyan/blau/amber/grün/violett/rot/orange).
+- **Roboter & Drohnen als eigene Schicht:** der „Roboter/Drohne"-Knoten in der Signalkette ist klickbar und zeigt die Hersteller (Tesla Optimus, Boston Dynamics, Unitree, AgiBot, Figure, Agility, 1X, Apptronik, UBTech, DJI) — privat/handelbar klar markiert.
+- **Compute-Tab:** erklärt das Daten-Flywheel — warum Robotik (Digital Twins, 4D-Video, Edge-Inferenz, mehr Ground Truth) die Compute-Nachfrage rekursiv und *additiv* zur LLM-Nachfrage verstärkt.
 
 - **Sprache DE/EN** umschaltbar oben rechts (Button) — übersetzt die komplette Oberfläche *und* alle Daten (Firmen, Use Cases, Phasen); Auswahl wird gemerkt.
 - **Suche** über jedem Raster (Firmen, Use Cases) — Name oder Ticker eintippen.
