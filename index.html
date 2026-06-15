@@ -87,6 +87,10 @@ section{padding:84px 0;border-bottom:1px solid var(--line)}
 .uc-firms{font-size:13.5px;color:#A9B7C6;margin-top:2px}
 .uc-why{font-size:14.5px;color:#D5DEE8;background:rgba(53,214,232,.06);
   border:1px solid rgba(53,214,232,.22);border-radius:11px;padding:13px 15px;margin-top:6px}
+.uc-links{display:flex;flex-wrap:wrap;gap:8px}
+.uc-links a{font-family:var(--mono);font-size:12px;color:var(--cyan);text-decoration:none;
+  border:1px solid var(--line);border-radius:8px;padding:4px 10px;transition:.15s}
+.uc-links a:hover{border-color:var(--cyan);background:rgba(53,214,232,.08)}
 .phasedetail.open{max-height:600px;opacity:1;margin-top:16px}
 .pd-inner{background:var(--panel2);border:1px solid var(--line);border-left:3px solid var(--cyan);
   border-radius:12px;padding:20px 22px}
@@ -777,6 +781,7 @@ const UI = {
  lblSignal:{de:"Frühsignal",en:"Early signal"},
  lblBewertung:{de:"Bewertung",en:"Valuation"},
  lblKurve:{de:"Auf der Kurve",en:"On the curve"},
+ lblLinks:{de:"Offizielle Seiten",en:"Official sites"},
  lblStatus:{de:"Status / Kennzahl",en:"Status / metric"},
  lblAnbieter:{de:"Führende Anbieter",en:"Leading providers"},
  lblSensor:{de:"Sensor-Bezug:",en:"Sensor link:"},
@@ -1134,7 +1139,42 @@ const USECASES=[
  {cat:"enabler",name:"5G & Telekommunikation",tier:"prod",metric:"Unter 1 ms Latenz für Echtzeit-Robotersteuerung.",firms:"Ericsson, Qualcomm",why:"Das Nervensystem, das Sensorwerte und Befehle in Echtzeit überträgt."},
  {cat:"enabler",name:"Foundation Models für Robotik",tier:"frontier",metric:"Generalist-Policies; ~20 Demos bis zur Autonomie.",firms:"NVIDIA GR00T/Cosmos, Gemini Robotics, Physical Intelligence (π0)",why:"Das Gehirn, das rohe Sensordaten in Handlungen übersetzt."}
 ];
-const ucfilters=document.getElementById("ucfilters"), ucgrid=document.getElementById("ucgrid"), ucdetail=document.getElementById("ucdetail");
+// Anbieter-Links je Use Case — URLs direkt aus der Projekt-Doku (keine erfundenen)
+const UC_LINKS = {
+ "Autonomes Fahren":[["Waymo","https://waymo.com"],["Tesla FSD","https://www.tesla.com/autopilot"],["Baidu Apollo","https://apollo.baidu.com"],["Mobileye","https://www.mobileye.com"]],
+ "Flugtaxis (eVTOL)":[["EHang","https://www.ehang.com"],["Joby Aviation","https://www.jobyaviation.com"],["Archer","https://www.archer.com"],["Lilium","https://www.lilium.com"]],
+ "Autonome Schiffe":[["Yara Birkeland","https://www.yara.com/yara-birkeland/"],["Kongsberg","https://www.kongsberg.com/maritime/"],["Rolls-Royce","https://www.rolls-royce.com"]],
+ "OP-Roboter (assistiert)":[["Intuitive da Vinci","https://www.intuitive.com"],["Medtronic Hugo","https://www.medtronic.com"]],
+ "Autonome OP":[["Johns Hopkins SRT-H","https://hub.jhu.edu"]],
+ "Pflegeroboter":[["Diligent Moxi","https://diligentrobots.com"],["Toyota HSR","https://www.toyota.com"],["PARO","https://www.parorobots.com"]],
+ "Notfall- & AED-Drohnen":[["Zipline","https://www.flyzipline.com"],["Wing","https://wing.com"],["Everon","https://www.everon.io"]],
+ "Labor-Roboter":[["Recursion","https://www.recursion.com"],["Insilico","https://insilico.com"],["Strateos","https://strateos.com"]],
+ "Agrar-Drohnen":[["DJI Agras","https://ag.dji.com"],["XAG","https://www.xa.com"],["John Deere","https://www.deere.com"]],
+ "Ernte-Picker":[["Abundant Robotics","https://www.abundantrobotics.com"],["Tortuga AgTech","https://www.tortugaagtech.com"],["Agrobot","https://www.agrobot.com"]],
+ "Tier- & Melkroboter":[["Lely Astronaut","https://www.lely.com/solutions/milking/"],["Connecterra","https://www.connecterra.io"],["Cainthus","https://cainthus.com"]],
+ "Aquakultur-Roboter":[["Stingray Marine","https://stingray.no"],["XpertSea","https://xpertsea.com"],["Observe","https://observetechnologies.com"]],
+ "Forstrobotik":[["DroneSeed","https://www.droneseed.com"],["Flashforest","https://flashforest.ca"],["Global Forest Watch","https://www.globalforestwatch.org"]],
+ "Klima- & Umweltmonitoring":[["Tomorrow.io","https://www.tomorrow.io"],["Pachama","https://pachama.com"],["GHGSat","https://www.ghgsat.com"]],
+ "Industrieroboter":[["FANUC","https://www.fanuc.eu"],["ABB","https://new.abb.com/products/robotics"],["KUKA","https://www.kuka.com"],["Universal Robots","https://www.universal-robots.com"]],
+ "Lagerroboter":[["Amazon Robotics","https://www.amazonrobotics.com"],["BD Stretch","https://bostondynamics.com/products/stretch/"],["Ocado","https://www.ocadogroup.com/technology"],["Geek+","https://www.geekplus.com"]],
+ "Bergbaurobotik":[["Caterpillar","https://www.cat.com/en_US/by-industry/mining/autonomous-solutions.html"],["Komatsu","https://www.komatsu.com"],["Rio Tinto","https://www.riotinto.com"]],
+ "Baurobotik":[["ICON 3D","https://www.iconbuild.com"],["FBR Hadrian X","https://www.fbr.com.au"],["SAM100","https://www.construction-robotics.com"],["BD Spot","https://bostondynamics.com/products/spot/"]],
+ "Halbleiter-Produktion":[["ASML","https://www.asml.com"],["Applied Materials","https://www.appliedmaterials.com"],["TSMC","https://www.tsmc.com"]],
+ "Feuerwehrroboter":[["Thermite (Howe)","https://www.howe-howe.com"],["Robotnik","https://robotnik.eu"],["DOK-ING","https://www.dok-ing.hr"]],
+ "Katastrophenschutz":[["BD Spot","https://bostondynamics.com/products/spot/"],["DARPA","https://www.darpa.mil"]],
+ "Militär & Verteidigung":[["Baykar (TB2)","https://www.baykarsavunma.com"],["Boeing Orca","https://www.boeing.com/defense/autonomous-systems"],["Northrop Grumman","https://www.northropgrumman.com"]],
+ "Müll & Straßenreinigung":[["AMP Robotics","https://amprobotics.com"],["Gaussian Robotics","https://www.gaussianrobotics.com"],["The Ocean Cleanup","https://theoceancleanup.com"]],
+ "Smart Traffic Management":[["Surtrac (CMU)","https://www.cmu.edu/traffic21/surtrac/"],["Siemens Mobility","https://www.mobility.siemens.com"],["Yunex","https://www.yunextraffic.com"]],
+ "Energienetz-Management":[["Tesla Autobidder","https://www.tesla.com/autobidder"],["AutoGrid","https://www.auto-grid.com"]],
+ "Hotel- & Service-Roboter":[["Relay Robotics","https://relayrobotics.com"],["Henn-na Hotel","https://www.h-n-h.jp/en"],["Miso Flippy","https://misorobotics.com"]],
+ "Retail-Roboter":[["Simbe","https://www.simberobotics.com"],["Amazon Go","https://www.amazon.com/b?node=16008589011"],["Ocado","https://www.ocadogroup.com"]],
+ "Food-Delivery-Roboter":[["Starship","https://www.starship.xyz"],["Nuro","https://www.nuro.ai"],["Amazon Prime Air","https://www.amazon.com/primeair"]],
+ "Sport- & Coaching-Roboter":[["Catapult Sports","https://www.catapult.com"],["HomeCourt","https://www.homecourt.ai"],["Second Spectrum","https://www.secondspectrum.com"],["Zone7","https://zone7.ai"]],
+ "Humanoide":[["Tesla Optimus","https://www.tesla.com/optimus"],["Figure AI","https://www.figure.ai"],["Boston Dynamics Atlas","https://bostondynamics.com/atlas/"],["Unitree","https://www.unitree.com"]],
+ "Weltraumrobotik":[["SpaceX","https://www.spacex.com"],["NASA Perseverance","https://mars.nasa.gov/mars2020/"],["ClearSpace","https://clearspace.today"]],
+ "Digital Twins":[["NVIDIA Omniverse","https://www.nvidia.com/en-us/omniverse/"],["Siemens Digital Twin","https://www.siemens.com/digital-twin"],["GE Digital","https://www.ge.com/digital/iiot-platform"]],
+ "5G & Telekommunikation":[["Ericsson","https://www.ericsson.com/en/5g"],["Qualcomm","https://www.qualcomm.com/5g"]]
+};
 let ucActive="alle", ucSel=null, ucQuery="";
 function ucCat(cat){ return LANG==="en"?EN_UCAT[cat]:CATLABEL[cat]; }
 function ucTier(tier){ return LANG==="en"?EN_TIER[tier]:TIERS[tier].l; }
@@ -1182,6 +1222,7 @@ function showUseCase(i){
     <dl class="kv"><dt>${T("lblStatus")}</dt><dd>${ucF(u,"metric")}</dd></dl>
     <dl class="kv"><dt>${T("lblAnbieter")}</dt><dd>${ucF(u,"firms")}</dd></dl>
     <dl class="kv"><dt>${T("lblKurve")}</dt><dd>${curve}</dd></dl>
+    ${UC_LINKS[u.name]?`<dl class="kv"><dt>${T("lblLinks")}</dt><dd class="uc-links">${UC_LINKS[u.name].map(([nm,url])=>`<a href="${url}" target="_blank" rel="noopener">${nm} ↗</a>`).join("")}</dd></dl>`:""}
     <div class="uc-why"><b style="color:${t.col}">${T("lblSensor")}</b> ${ucF(u,"why")}</div>
   </div>`;
   ucdetail.classList.add("open"); writeHash("uc="+i);
