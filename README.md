@@ -18,7 +18,7 @@ Ein interaktives Ein-Seiten-Observatorium, das die **gesamte LiDAR- und Sensor-L
 | **Wo wir stehen** | S-Kurve der Adoption bis ~2060. Klick auf eine Phase öffnet die Erklärung **inline darunter** (aus der Projekt-Doku), der „WIR SIND HIER"-Punkt **wandert** dabei auf der Kurve mit |
 | **Signalkette** | Interaktive Supply-Chain: Laser → Detektor → LiDAR-System → Edge-Gehirn → Aktoren → Roboter. Klick auf eine Stufe zeigt die Firmen **inline**; die Liste bleibt sichtbar, während ein Firmendetail darunter erscheint |
 | **Firmen-Explorer** | 22 Firmen, filterbar nach Schicht; Klick öffnet Finanzen, Sektor, Aktien-Ticker, Status und Frühsignal — alles **inline, ohne Popups** |
-| **Use Cases** | 35 Physical-AI-Anwendungsfälle (Mobilität, Medizin, Landwirtschaft, Industrie, Notfall, Stadt, Service, Frontier, Enabler) aus der Projekt-Doku, filterbar nach Bereich; Klick zeigt Reife, Kennzahl, führende Anbieter und Sensor-Bezug |
+| **Use Cases** | 35 Physical-AI-Anwendungsfälle (Mobilität, Medizin, Landwirtschaft, Industrie, Notfall, Stadt, Service, Frontier, Enabler) aus der Projekt-Doku, filterbar nach Bereich; Klick zeigt Reife, Kennzahl, führende Anbieter (mit anklickbaren offiziellen Links aus der Doku) und Sensor-Bezug |
 | **Frühindikatoren** | Die 5 Zahlen, die man pro Quartal prüft (Stückzahl-Wachstum, Robotik-vs-Auto-Mix, Umsatz-Anteil, Backlogs, Preis pro Einheit) |
 | **Geopolitik** | China-Restriktionen (DoD-1260H, SAFE LiDAR Act) als Signalfaktor |
 
@@ -33,6 +33,8 @@ Die Firmen sind in drei Ampelstufen sortiert:
 **Das wichtigste Signal:** der Robotik-**Umsatz**-Anteil. Die Stückzahl-Wende ist im Q1 2026 passiert (RoboSense: Robotik überholt Auto, 56 %), die Geld-Wende steht noch aus. Echte Sättigung erst ~2050–60.
 
 ## Bedienung & Aktualisierung
+
+- **Tab-Navigation statt Scrollen:** sechs Bereiche (Wo wir stehen, Signalkette, Firmen, Use Cases, Frühindikatoren, Geopolitik) als sticky Tabs — immer nur eine Ansicht sichtbar, jeder Tab in eigener Farbe (cyan/blau/amber/grün/violett/rot).
 
 - **Sprache DE/EN** umschaltbar oben rechts (Button) — übersetzt die komplette Oberfläche *und* alle Daten (Firmen, Use Cases, Phasen); Auswahl wird gemerkt.
 - **Suche** über jedem Raster (Firmen, Use Cases) — Name oder Ticker eintippen.

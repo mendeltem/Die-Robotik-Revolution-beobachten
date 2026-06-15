@@ -24,7 +24,7 @@ a{color:var(--cyan);text-decoration:none}
 .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
 .mono{font-family:var(--mono)}
 .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.18em;
-  text-transform:uppercase;color:var(--cyan)}
+  text-transform:uppercase;color:var(--tab,var(--cyan))}
 .muted{color:var(--muted)}
 
 /* ---------- HERO ---------- */
@@ -245,20 +245,28 @@ section{padding:84px 0;border-bottom:1px solid var(--line)}
 
 footer{padding:50px 0 70px}
 .disc{font-size:12.5px;color:var(--muted);max-width:80ch;line-height:1.7}
-.navtop{position:fixed;top:0;left:0;right:0;z-index:40;backdrop-filter:blur(10px);
-  background:rgba(10,14,20,.72);border-bottom:1px solid var(--line);transition:.3s;transform:translateY(-100%)}
-.navtop.show{transform:none}
-.navtop .wrap{display:flex;align-items:center;justify-content:space-between;height:54px}
-.navtop .b{font-family:var(--disp);font-weight:600;font-size:15px}
-.navtop a{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin-left:18px}
-.navtop a:hover{color:var(--ink)}
+/* sticky tab bar */
+.tabbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:14px;
+  padding:10px max(24px,calc((100% - 1120px)/2));background:rgba(10,14,20,.86);
+  backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.tb-brand{font-family:var(--disp);font-weight:600;font-size:15px;white-space:nowrap}
+.tb-tabs{display:flex;gap:7px;flex:1;overflow-x:auto;scrollbar-width:none}
+.tb-tabs::-webkit-scrollbar{display:none}
+.tab{font-family:var(--mono);font-size:12.5px;color:var(--muted);background:transparent;
+  border:1px solid transparent;border-radius:9px;padding:7px 13px;cursor:pointer;white-space:nowrap;transition:.15s}
+.tab:hover{color:var(--ink);border-color:var(--line)}
+.tab.on{color:#0A0E14;background:var(--tc);border-color:var(--tc);font-weight:600}
+/* tab sections: one visible at a time */
+.tabsec{display:none;animation:rise .3s ease}
+.tabsec.active{display:block}
+.tabsec section,section.tabsec{padding-top:46px}
 
 @media(max-width:760px){
   .stats{grid-template-columns:repeat(2,1fr)}
   .phase-row{grid-template-columns:1fr 1fr}
   .geo{grid-template-columns:1fr}
   .kv{grid-template-columns:1fr}
-  .navtop .links{display:none}
+  .tb-brand{display:none}
   .wrap{padding:0 16px}
   section{padding:56px 0}
   .grid{grid-template-columns:1fr}
@@ -274,21 +282,6 @@ footer{padding:50px 0 70px}
 </style>
 </head>
 <body>
-
-<nav class="navtop" id="nav">
-  <div class="wrap">
-    <span class="b" data-i18n="navBrand">◎ Robotik-Observatorium</span>
-    <span class="links">
-      <a href="#stand" data-i18n="navStand">Wo wir stehen</a>
-      <a href="#kette" data-i18n="navChain">Signalkette</a>
-      <a href="#firmen" data-i18n="navFirms">Firmen</a>
-      <a href="#usecases" data-i18n="navUC">Use Cases</a>
-      <a href="#dash" data-i18n="navDash">Frühindikatoren</a>
-      <button id="langtoggle" class="langtoggle" onclick="toggleLang()" aria-label="Sprache umschalten">DE / <b>EN</b></button>
-    </span>
-  </div>
-</nav>
-
 
 <!-- HERO -->
 <header id="hero">
@@ -308,8 +301,15 @@ footer{padding:50px 0 70px}
   </div>
 </header>
 
+<!-- STICKY TAB BAR (built by JS) -->
+<div class="tabbar" id="tabbar">
+  <span class="tb-brand" data-i18n="navBrand">◎ Robotik-Observatorium</span>
+  <div class="tb-tabs" id="tbtabs"></div>
+  <button id="langtoggle" class="langtoggle" onclick="toggleLang()" aria-label="Sprache umschalten">DE / <b>EN</b></button>
+</div>
+
 <!-- WO WIR STEHEN -->
-<section id="stand"><div class="wrap">
+<section id="stand" class="tabsec"><div class="wrap">
   <div class="sec-head">
     <span class="eyebrow" data-i18n="standEyebrow">Standort</span>
     <h2 data-i18n="standH2">Der Kanarienvogel singt — die Mine ist noch nicht voll.</h2>
@@ -349,7 +349,7 @@ footer{padding:50px 0 70px}
 </div></section>
 
 <!-- SIGNALKETTE -->
-<section id="kette"><div class="wrap">
+<section id="kette" class="tabsec"><div class="wrap">
   <div class="sec-head">
     <span class="eyebrow" data-i18n="ketteEyebrow">Lieferkette</span>
     <h2 data-i18n="ketteH2">Die Signalkette: vom Licht zum Roboter</h2>
@@ -366,7 +366,7 @@ footer{padding:50px 0 70px}
 </div></section>
 
 <!-- FIRMEN -->
-<section id="firmen"><div class="wrap">
+<section id="firmen" class="tabsec"><div class="wrap">
   <div class="sec-head">
     <span class="eyebrow" data-i18n="firmenEyebrow">Firmen-Explorer</span>
     <h2 data-i18n="firmenH2">Wer steckt in jeder Schicht?</h2>
@@ -379,7 +379,7 @@ footer{padding:50px 0 70px}
 </div></section>
 
 <!-- USE CASES -->
-<section id="usecases"><div class="wrap">
+<section id="usecases" class="tabsec"><div class="wrap">
   <div class="sec-head">
     <span class="eyebrow" data-i18n="ucEyebrow">Physical-AI Use Cases</span>
     <h2 data-i18n="ucH2">Wohin die Augen kommen</h2>
@@ -391,7 +391,7 @@ footer{padding:50px 0 70px}
   <div id="ucdetail" class="inlinepanel"></div>
 </div></section>
 
-<section id="dash"><div class="wrap">
+<section id="dash" class="tabsec"><div class="wrap">
   <div class="sec-head">
     <span class="eyebrow" data-i18n="dashEyebrow">Frühindikatoren</span>
     <h2 data-i18n="dashH2">Die 5 Zahlen, die du pro Quartal checkst</h2>
@@ -413,7 +413,7 @@ footer{padding:50px 0 70px}
 </div></section>
 
 <!-- GEO -->
-<section id="geo"><div class="wrap">
+<section id="geo" class="tabsec"><div class="wrap">
   <div class="sec-head">
     <span class="eyebrow" data-i18n="geoEyebrow">Geopolitik</span>
     <h2 data-i18n="geoH2">Regulierung versucht zu verschieben</h2>
@@ -736,6 +736,7 @@ const UI = {
  navFirms:{de:"Firmen",en:"Companies"},
  navUC:{de:"Use Cases",en:"Use cases"},
  navDash:{de:"Frühindikatoren",en:"Early indicators"},
+ navGeo:{de:"Geopolitik",en:"Geopolitics"},
  heroTag:{de:"Live-Beobachtung · Stand Q1 2026",en:"Live watch · as of Q1 2026"},
  heroH1:{de:'Die <span class="hl">Robotik-Revolution</span> beobachten',en:'Watching the <span class="hl">Robotics Revolution</span>'},
  heroLede:{de:"Jeder Roboter und jede Drohne braucht Augen. Diese Augen sind Optik — Kameras und LiDAR. Hier verfolgst du die ganze Lieferkette und erkennst an den Quartalszahlen, wann die Welle in die Massenproduktion kippt.",en:"Every robot and every drone needs eyes. Those eyes are optics — cameras and LiDAR. Here you track the whole supply chain and read in the quarterly numbers when the wave tips into mass production."},
@@ -744,7 +745,7 @@ const UI = {
  stat3:{de:"Automotive-LiDAR-Markt 2025, +60% YoY (Yole)",en:"Automotive LiDAR market 2025, +60% YoY (Yole)"},
  stat3num:{de:"&gt;1 Mrd.&nbsp;$",en:"&gt;$1bn"},
  stat4:{de:"Humanoide 2025 → >100k erwartet 2027",en:"Humanoids 2025 → >100k expected 2027"},
- scrollcue:{de:"↓ scrollen — wo wir auf der Kurve stehen",en:"↓ scroll — where we are on the curve"},
+ scrollcue:{de:"↓ unten einen Bereich wählen — eine Ansicht nach der anderen",en:"↓ pick a section below — one view at a time"},
  standEyebrow:{de:"Standort",en:"Location"},
  standH2:{de:"Der Kanarienvogel singt — die Mine ist noch nicht voll.",en:"The canary is singing — the mine is not full yet."},
  standP:{de:'Bei den <b>Stückzahlen</b> ist die Roboter-Wende gerade passiert. Beim <b>Umsatz</b> und bei echter <b>Massenproduktion</b> stehen wir noch am Anfang der steilen Kurve. Genau jetzt beobachten — nicht „die Welle ist da".',en:'In <b>units</b> the robot inflection just happened. In <b>revenue</b> and real <b>mass production</b> we are still at the start of the steep curve. Watch now — not "the wave has arrived".'},
@@ -1028,9 +1029,38 @@ function buildChain(){
 }
 buildChain();
 
-// ---- sticky nav ----
-const nav=document.getElementById("nav");
-addEventListener("scroll",()=>{nav.classList.toggle("show",scrollY>620);});
+// ---- tab navigation (one section at a time, each its own colour) ----
+const TABS = [
+  {key:"stand",    nav:"navStand", col:"#35D6E8"},
+  {key:"kette",    nav:"navChain", col:"#5B8DEF"},
+  {key:"firmen",   nav:"navFirms", col:"#F4B23E"},
+  {key:"usecases", nav:"navUC",    col:"#3FD17A"},
+  {key:"dash",     nav:"navDash",  col:"#A78BFA"},
+  {key:"geo",      nav:"navGeo",   col:"#F2607A"}
+];
+let activeTab = "stand";
+const tbtabs = document.getElementById("tbtabs");
+function renderTabs(){
+  tbtabs.innerHTML="";
+  TABS.forEach(tb=>{
+    const b=document.createElement("button");
+    b.className="tab"+(tb.key===activeTab?" on":"");
+    b.style.setProperty("--tc",tb.col);
+    b.textContent=T(tb.nav); b.dataset.key=tb.key;
+    b.onclick=()=>showTab(tb.key,true);
+    tbtabs.appendChild(b);
+  });
+}
+function showTab(key,scroll){
+  const tb=TABS.find(t=>t.key===key)||TABS[0];
+  activeTab=tb.key;
+  document.querySelectorAll(".tabsec").forEach(s=>s.classList.toggle("active",s.id===tb.key));
+  document.querySelectorAll("#tbtabs .tab").forEach(b=>b.classList.toggle("on",b.dataset.key===tb.key));
+  document.documentElement.style.setProperty("--tab",tb.col);
+  if(scroll){ const bar=document.getElementById("tabbar"); if(bar) bar.scrollIntoView({behavior:"smooth",block:"start"}); }
+}
+renderTabs();
+showTab("stand",false);
 
 // ---- adoption phases: inline panel + travelling marker (no popup) ----
 const phaserow=document.getElementById("phaserow");
@@ -1269,10 +1299,10 @@ function handleHash(){
   const h=location.hash.replace(/^#/,""); if(!h)return;
   const [k,v]=h.split("=");
   setTimeout(()=>{
-    if(k==="firm"){const c=COMPANIES.find(x=>x.id===v); if(c){document.getElementById("firmen").scrollIntoView();showFirmInGrid(v);}}
-    else if(k==="uc"){const i=parseInt(v,10); if(USECASES[i]){document.getElementById("usecases").scrollIntoView();showUseCase(i);}}
-    else if(k==="phase"){if(PHASES.find(p=>p.id===v)){document.getElementById("stand").scrollIntoView();openPhase(v);}}
-    else if(k==="layer"){if(STAGES.find(s=>s.key===v)){document.getElementById("kette").scrollIntoView();showLayer(v);}}
+    if(k==="firm"){const c=COMPANIES.find(x=>x.id===v); if(c){showTab("firmen",false);showFirmInGrid(v);document.getElementById("firmen").scrollIntoView();}}
+    else if(k==="uc"){const i=parseInt(v,10); if(USECASES[i]){showTab("usecases",false);showUseCase(i);document.getElementById("usecases").scrollIntoView();}}
+    else if(k==="phase"){if(PHASES.find(p=>p.id===v)){showTab("stand",false);openPhase(v);document.getElementById("stand").scrollIntoView();}}
+    else if(k==="layer"){if(STAGES.find(s=>s.key===v)){showTab("kette",false);showLayer(v);document.getElementById("kette").scrollIntoView();}}
   },300);
 }
 handleHash();
@@ -1283,6 +1313,7 @@ function applyLang(){
   document.querySelectorAll("[data-i18n]").forEach(el=>{ const k=el.getAttribute("data-i18n"); if(UI[k]) el.innerHTML=UI[k][LANG]; });
   document.querySelectorAll("[data-i18n-ph]").forEach(el=>{ const k=el.getAttribute("data-i18n-ph"); if(UI[k]) el.placeholder=UI[k][LANG]; });
   const lt=document.getElementById("langtoggle"); if(lt) lt.innerHTML = LANG==="de" ? '<b>DE</b> / EN' : 'DE / <b>EN</b>';
+  if(typeof renderTabs==="function"){ renderTabs(); showTab(activeTab,false); }
   // rebuild dynamic content in the new language
   renderFirmFilters(); render(); buildChain(); renderUCFilters(); renderUC(); renderEarnings();
   const curPhase = selPhase || PHASES.find(p=>p.here).id;
