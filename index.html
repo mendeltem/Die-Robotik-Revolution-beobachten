@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Die Robotik-Revolution beobachten</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0A0E14; --panel:#131A24; --panel2:#0F1620; --ink:#E6EDF3;
+  --cyan:#35D6E8; --amber:#F4B23E; --green:#3FD17A; --red:#F2607A;
+  --muted:#6B7A8D; --line:#1F2A36;
+  --disp:"Space Grotesk",system-ui,sans-serif;
+  --body:"Inter",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);
+  line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:var(--cyan);text-decoration:none}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+.mono{font-family:var(--mono)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--cyan)}
+.muted{color:var(--muted)}
+
+/* ---------- HERO ---------- */
+#hero{position:relative;min-height:92vh;display:flex;align-items:center;
+  border-bottom:1px solid var(--line);overflow:hidden}
+#cloud{position:absolute;inset:0;width:100%;height:100%;z-index:0;opacity:.85}
+.hero-inner{position:relative;z-index:2;padding:90px 0 60px}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);
+  background:rgba(19,26,36,.7);border-radius:100px;padding:7px 14px;
+  font-family:var(--mono);font-size:12px;letter-spacing:.06em;color:var(--muted);backdrop-filter:blur(4px)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--green);
+  box-shadow:0 0 10px var(--green);animation:pulse 2.2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+h1{font-family:var(--disp);font-weight:700;font-size:clamp(40px,7vw,82px);
+  line-height:.98;letter-spacing:-.02em;margin:22px 0 18px;max-width:15ch}
+h1 .hl{color:var(--cyan)}
+.lede{font-size:clamp(16px,2vw,20px);max-width:56ch;color:#B9C6D4}
+.scrollcue{margin-top:34px;font-family:var(--mono);font-size:12px;color:var(--muted);
+  letter-spacing:.1em}
+
+/* ---------- STAT STRIP ---------- */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);
+  border:1px solid var(--line);margin-top:48px;border-radius:14px;overflow:hidden}
+.stat{background:var(--panel);padding:22px 20px}
+.stat .num{font-family:var(--disp);font-weight:700;font-size:clamp(26px,3.4vw,40px);
+  line-height:1;letter-spacing:-.02em}
+.stat .num.c{color:var(--cyan)} .stat .num.a{color:var(--amber)} .stat .num.g{color:var(--green)}
+.stat .lab{font-size:13px;color:var(--muted);margin-top:9px}
+
+/* ---------- SECTION ---------- */
+section{padding:84px 0;border-bottom:1px solid var(--line)}
+.sec-head{max-width:62ch;margin-bottom:40px}
+.sec-head h2{font-family:var(--disp);font-weight:600;font-size:clamp(26px,4vw,42px);
+  letter-spacing:-.02em;margin:14px 0 14px;line-height:1.05}
+.sec-head p{color:#A9B7C6;font-size:16px}
+
+/* ---------- CURVE ---------- */
+.curve-box{background:var(--panel);border:1px solid var(--line);border-radius:16px;
+  padding:30px 26px}
+.phase-row{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:24px}
+.phase{padding:14px 12px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);cursor:pointer;transition:.16s}
+.phase:hover{transform:translateY(-3px);border-color:var(--muted)}
+.phase.here{border-color:var(--cyan);background:rgba(53,214,232,.08);box-shadow:0 0 0 1px var(--cyan) inset}
+.phase.here:hover{border-color:var(--cyan)}
+.phase.sel{border-color:var(--cyan);background:rgba(53,214,232,.08);box-shadow:0 0 0 1px var(--cyan) inset}
+/* inline phase detail (opens below the row, no popup) */
+.phasedetail{overflow:hidden;max-height:0;opacity:0;transition:max-height .45s ease,opacity .35s ease,margin .35s ease;margin-top:0}
+.inlinepanel{overflow:hidden;max-height:0;opacity:0;transition:max-height .45s ease,opacity .35s ease,margin .35s ease;margin-top:0}
+.inlinepanel.open{max-height:1600px;opacity:1;margin-top:18px}
+.snode.sel{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset,0 10px 30px -12px var(--accent)}
+.card.sel{border-color:var(--accent)!important;box-shadow:0 0 0 1px var(--accent) inset}
+.tier-prod{--tc:#3FD17A} .tier-early{--tc:#35D6E8} .tier-pilot{--tc:#F4B23E} .tier-frontier{--tc:#A78BFA}
+.uc-badge{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.05em;
+  text-transform:uppercase;padding:3px 9px;border-radius:100px;border:1px solid var(--tc);color:var(--tc);white-space:nowrap}
+.uc-cat{font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.uc-firms{font-size:13.5px;color:#A9B7C6;margin-top:2px}
+.uc-why{font-size:14.5px;color:#D5DEE8;background:rgba(53,214,232,.06);
+  border:1px solid rgba(53,214,232,.22);border-radius:11px;padding:13px 15px;margin-top:6px}
+.phasedetail.open{max-height:600px;opacity:1;margin-top:16px}
+.pd-inner{background:var(--panel2);border:1px solid var(--line);border-left:3px solid var(--cyan);
+  border-radius:12px;padding:20px 22px}
+.pd-inner .pd-tag{font-family:var(--mono);font-size:11.5px;color:var(--cyan);letter-spacing:.08em}
+.pd-inner h4{font-family:var(--disp);font-weight:600;font-size:21px;margin:5px 0 10px}
+.pd-inner p{font-size:15px;color:#D5DEE8;line-height:1.6}
+.pd-inner .pd-src{font-family:var(--mono);font-size:11.5px;color:var(--muted);margin-top:12px}
+/* smooth travel of the WIR-SIND-HIER marker along the curve */
+#mdot,#mring{transition:cx .55s cubic-bezier(.4,0,.2,1),cy .55s cubic-bezier(.4,0,.2,1)}
+#mline{transition:x1 .55s cubic-bezier(.4,0,.2,1),x2 .55s cubic-bezier(.4,0,.2,1)}
+#mlabel,#msub{transition:x .55s cubic-bezier(.4,0,.2,1)}
+.phase .yr{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.phase .t{font-family:var(--disp);font-weight:600;font-size:15px;margin-top:4px}
+.phase.here .t{color:var(--cyan)}
+.phase .d{font-size:12.5px;color:var(--muted);margin-top:6px}
+
+/* ---------- SIGNAL CHAIN (interactive) ---------- */
+.chainflow{display:flex;align-items:stretch;gap:0;flex-wrap:nowrap;overflow-x:auto;
+  padding:6px 2px 14px;scroll-snap-type:x proximity}
+.stage{display:flex;align-items:center;flex:0 0 auto;scroll-snap-align:start}
+.snode{width:208px;min-height:158px;background:var(--panel);border:1.5px solid var(--line);
+  border-radius:16px;padding:18px 16px;cursor:pointer;transition:.18s;position:relative;
+  display:flex;flex-direction:column}
+.snode:hover{transform:translateY(-4px);border-color:var(--accent);
+  box-shadow:0 10px 30px -12px var(--accent)}
+.snode .stnum{font-family:var(--mono);font-size:12px;color:var(--accent);letter-spacing:.1em}
+.snode .stt{font-family:var(--disp);font-weight:600;font-size:18px;margin:6px 0 7px;line-height:1.1}
+.snode .std{font-size:12.5px;color:#9FB0C0;flex:1}
+.snode .stf{margin-top:12px;display:flex;align-items:center;justify-content:space-between;
+  font-family:var(--mono);font-size:11.5px;color:var(--accent)}
+.snode .stf .cnt{background:var(--panel2);border:1px solid var(--accent);
+  border-radius:100px;padding:2px 9px}
+.snode.robot{cursor:default;width:178px;background:var(--panel2);align-items:center;justify-content:center;text-align:center}
+.snode.robot:hover{transform:none;box-shadow:none;border-color:var(--line)}
+.snode.robot .stt{color:var(--ink);font-size:17px}
+.arrow{flex:0 0 auto;width:34px;display:flex;align-items:center;justify-content:center;
+  color:var(--muted);font-size:20px}
+.arrow .lbl{position:absolute;transform:translateY(-22px);font-family:var(--mono);
+  font-size:9.5px;color:var(--muted);white-space:nowrap}
+.chain-hint{font-family:var(--mono);font-size:12px;color:var(--muted);margin:2px 0 18px}
+.legend{display:flex;gap:22px;flex-wrap:wrap;margin-top:20px;font-size:13.5px}
+.legend span{display:inline-flex;align-items:center;gap:8px;color:#B9C6D4}
+.swatch{width:12px;height:12px;border-radius:3px}
+
+/* layer popup: firm list rows */
+.lp-firms{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+.lp-row{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  background:var(--panel2);border:1px solid var(--line);border-radius:11px;
+  padding:12px 14px;cursor:pointer;transition:.15s}
+.lp-row:hover{border-color:var(--muted);transform:translateX(3px)}
+.lp-row.active{border-color:var(--cyan);background:rgba(53,214,232,.07);box-shadow:0 0 0 1px var(--cyan) inset}
+.chainfirm:empty{display:none}
+.chainfirm-card{margin-top:14px;background:var(--panel);border:1px solid var(--line);
+  border-left:3px solid var(--cyan);border-radius:12px;padding:18px 20px;animation:rise .25s ease}
+.lp-row .l{min-width:0}
+.lp-row .nm{font-family:var(--disp);font-weight:600;font-size:16px}
+.lp-row .tk{font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+.lp-row .go{font-family:var(--mono);font-size:11px;color:var(--cyan);white-space:nowrap}
+.back{font-family:var(--mono);font-size:12px;color:var(--cyan);cursor:pointer;
+  display:inline-flex;align-items:center;gap:6px;margin-bottom:14px;border:none;background:none}
+.ctx{font-size:15px;color:#D5DEE8;background:rgba(53,214,232,.06);
+  border:1px solid rgba(53,214,232,.25);border-radius:11px;padding:14px 16px;margin:4px 0 4px}
+
+/* ---------- FIRM EXPLORER ---------- */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:26px}
+.fbtn{font-family:var(--mono);font-size:12.5px;letter-spacing:.04em;
+  background:var(--panel);border:1px solid var(--line);color:var(--muted);
+  padding:9px 15px;border-radius:100px;cursor:pointer;transition:.18s}
+.fbtn:hover{color:var(--ink);border-color:var(--muted)}
+.fbtn.on{background:var(--cyan);color:#04141a;border-color:var(--cyan);font-weight:600}
+.search{width:100%;max-width:340px;background:var(--panel);border:1px solid var(--line);
+  color:var(--ink);font-family:var(--body);font-size:14px;padding:11px 15px;border-radius:100px;
+  margin-bottom:16px;outline:none;transition:.16s}
+.search:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(53,214,232,.12)}
+.search::placeholder{color:var(--muted)}
+.prog{display:inline-block;font-family:var(--mono);font-size:9.5px;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--amber);border:1px solid var(--amber);border-radius:100px;
+  padding:1px 7px;margin-left:4px;vertical-align:middle}
+.empty{color:var(--muted);font-size:14px;padding:20px 4px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(248px,1fr));gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+  padding:18px;cursor:pointer;transition:.18s;position:relative;overflow:hidden}
+.card:hover{transform:translateY(-3px);border-color:var(--muted)}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent,var(--muted))}
+.card .tk{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.card .nm{font-family:var(--disp);font-weight:600;font-size:19px;margin:3px 0 8px}
+.card .rl{font-size:13px;color:#A9B7C6;min-height:34px}
+.card .foot{display:flex;align-items:center;justify-content:space-between;margin-top:14px}
+.pill{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;padding:3px 9px;
+  border-radius:100px;border:1px solid var(--line);text-transform:uppercase}
+.led{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px}
+.led i{width:9px;height:9px;border-radius:50%}
+.led.hot i{background:var(--green);box-shadow:0 0 8px var(--green)}
+.led.warm i{background:var(--amber);box-shadow:0 0 8px var(--amber)}
+.led.risk i{background:var(--red);box-shadow:0 0 8px var(--red)}
+.led.hot{color:var(--green)} .led.warm{color:var(--amber)} .led.risk{color:var(--red)}
+
+/* ---------- MODAL ---------- */
+.modal{position:fixed;inset:0;background:rgba(4,8,12,.78);backdrop-filter:blur(6px);
+  z-index:50;display:none;align-items:flex-start;justify-content:center;padding:5vh 18px;overflow-y:auto}
+.modal.open{display:flex}
+.sheet{background:var(--panel);border:1px solid var(--line);border-radius:18px;
+  max-width:600px;width:100%;padding:30px;position:relative;animation:rise .25s ease}
+@keyframes rise{from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}}
+.close{position:absolute;right:18px;top:16px;background:none;border:none;color:var(--muted);
+  font-size:26px;cursor:pointer;line-height:1}
+.close:hover{color:var(--ink)}
+.sheet .tk{font-family:var(--mono);font-size:13px;color:var(--cyan)}
+.sheet h3{font-family:var(--disp);font-weight:700;font-size:30px;letter-spacing:-.02em;margin:4px 0 4px}
+.sheet .sub{color:var(--muted);font-size:14px;margin-bottom:20px}
+.kv{display:grid;grid-template-columns:130px 1fr;gap:6px 16px;font-size:14.5px;
+  padding:16px 0;border-top:1px solid var(--line)}
+.kv dt{color:var(--muted);font-family:var(--mono);font-size:12px;padding-top:2px}
+.kv dd{color:#D5DEE8}
+.note{font-size:13.5px;color:#9FB0C0;background:var(--panel2);border:1px solid var(--line);
+  border-radius:10px;padding:13px 15px;margin-top:16px}
+.note b{color:var(--amber)}
+
+/* ---------- DASHBOARD ---------- */
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.metric{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:18px}
+.metric .n{font-family:var(--mono);font-size:11px;color:var(--cyan)}
+.metric .h{font-family:var(--disp);font-weight:600;font-size:16px;margin:6px 0 8px}
+.metric .v{font-size:13.5px;color:#A9B7C6}
+.metric .v b{color:var(--green)}
+.m-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px}
+.trend{font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:100px;border:1px solid}
+.trend.up{color:var(--green);border-color:var(--green)}
+.trend.down{color:var(--red);border-color:var(--red)}
+.trend.flat{color:var(--amber);border-color:var(--amber)}
+.earnings{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:24px}
+.ecard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 15px}
+.ecard .ef{font-family:var(--disp);font-weight:600;font-size:15px}
+.ecard .ed{font-family:var(--mono);font-size:11.5px;color:var(--muted);margin-top:3px}
+.ecard .ec{font-family:var(--mono);font-size:12px;margin-top:8px;color:var(--cyan)}
+.ecard .ec.soon{color:var(--amber)}
+.ecard.past{opacity:.5}
+.elabel{font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.06em;
+  text-transform:uppercase;margin-bottom:10px;grid-column:1/-1}
+
+/* mini bar */
+.bars{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+.bar{display:grid;grid-template-columns:84px 1fr 56px;align-items:center;gap:10px;font-size:12px}
+.bar .track{height:9px;background:var(--panel2);border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+.bar .fill{height:100%;border-radius:6px}
+
+/* geo */
+.geo{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.geo .g{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:20px}
+.geo h4{font-family:var(--disp);font-size:17px;margin-bottom:8px}
+.geo p{font-size:14px;color:#A9B7C6}
+
+footer{padding:50px 0 70px}
+.disc{font-size:12.5px;color:var(--muted);max-width:80ch;line-height:1.7}
+.navtop{position:fixed;top:0;left:0;right:0;z-index:40;backdrop-filter:blur(10px);
+  background:rgba(10,14,20,.72);border-bottom:1px solid var(--line);transition:.3s;transform:translateY(-100%)}
+.navtop.show{transform:none}
+.navtop .wrap{display:flex;align-items:center;justify-content:space-between;height:54px}
+.navtop .b{font-family:var(--disp);font-weight:600;font-size:15px}
+.navtop a{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin-left:18px}
+.navtop a:hover{color:var(--ink)}
+
+@media(max-width:760px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .phase-row{grid-template-columns:1fr 1fr}
+  .geo{grid-template-columns:1fr}
+  .kv{grid-template-columns:1fr}
+  .navtop .links{display:none}
+  .wrap{padding:0 16px}
+  section{padding:56px 0}
+  .grid{grid-template-columns:1fr}
+  .metrics{grid-template-columns:1fr}
+  .earnings{grid-template-columns:1fr 1fr}
+  .snode{width:170px;min-height:140px}
+  .lp-row{flex-direction:column;align-items:flex-start;gap:8px}
+  .chain-hint::after{content:" (seitlich wischen →)";color:var(--muted)}
+  h1{font-size:clamp(34px,11vw,52px)}
+  .search{max-width:100%}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<nav class="navtop" id="nav">
+  <div class="wrap">
+    <span class="b">◎ Robotik-Observatorium</span>
+    <span class="links">
+      <a href="#stand">Wo wir stehen</a>
+      <a href="#kette">Signalkette</a>
+      <a href="#firmen">Firmen</a>
+      <a href="#usecases">Use Cases</a>
+      <a href="#dash">Frühindikatoren</a>
+    </span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header id="hero">
+  <canvas id="cloud"></canvas>
+  <div class="wrap hero-inner">
+    <span class="hero-tag"><span class="dot"></span> Live-Beobachtung · Stand Q1 2026</span>
+    <h1>Die <span class="hl">Robotik-Revolution</span> beobachten</h1>
+    <p class="lede">Jeder Roboter und jede Drohne braucht Augen. Diese Augen sind Optik — Kameras und LiDAR. Hier verfolgst du die ganze Lieferkette und erkennst an den Quartalszahlen, wann die Welle in die Massenproduktion kippt.</p>
+
+    <div class="stats">
+      <div class="stat"><div class="num c">+1.458%</div><div class="lab">Robotik-LiDAR-Stückzahlen bei RoboSense, Q1 2026 (YoY)</div></div>
+      <div class="stat"><div class="num a">56%</div><div class="lab">Robotik überholt erstmals Auto bei den Stückzahlen</div></div>
+      <div class="stat"><div class="num g">&gt;1 Mrd.&nbsp;$</div><div class="lab">Automotive-LiDAR-Markt 2025, +60% YoY (Yole)</div></div>
+      <div class="stat"><div class="num">~16k</div><div class="lab">Humanoide 2025 → &gt;100k erwartet 2027</div></div>
+    </div>
+    <div class="scrollcue">↓ scrollen — wo wir auf der Kurve stehen</div>
+  </div>
+</header>
+
+<!-- WO WIR STEHEN -->
+<section id="stand"><div class="wrap">
+  <div class="sec-head">
+    <span class="eyebrow">Standort</span>
+    <h2>Der Kanarienvogel singt — die Mine ist noch nicht voll.</h2>
+    <p>Bei den <b>Stückzahlen</b> ist die Roboter-Wende gerade passiert. Beim <b>Umsatz</b> und bei echter <b>Massenproduktion</b> stehen wir noch am Anfang der steilen Kurve. Genau jetzt beobachten — nicht „die Welle ist da".</p>
+  </div>
+  <div class="curve-box">
+    <svg viewBox="0 0 900 230" style="width:100%;height:auto" aria-label="S-Kurve der Adoption bis ~2060">
+      <defs><linearGradient id="cg" x1="0" x2="1"><stop offset="0" stop-color="#35D6E8" stop-opacity=".08"/><stop offset="1" stop-color="#35D6E8" stop-opacity=".5"/></linearGradient></defs>
+      <line x1="40" y1="190" x2="870" y2="190" stroke="#243240"/>
+      <!-- full path (invisible) used only for positioning the marker -->
+      <path id="scurve" d="M40 184 C 80 183, 95 181, 110 178 C 180 168, 230 150, 310 110 C 400 64, 520 36, 650 28 C 740 24, 810 23, 868 22" fill="none" stroke="none"/>
+      <!-- solid = einigermaßen belastbar (Auftragsbücher/Kapazitäten bis ~Mitte 2030er) -->
+      <path d="M40 184 C 80 183, 95 181, 110 178 C 180 168, 230 150, 310 110" fill="none" stroke="url(#cg)" stroke-width="3"/>
+      <!-- dashed = reine Prognose, Zeitpunkt ungewiss -->
+      <path d="M310 110 C 400 64, 520 36, 650 28 C 740 24, 810 23, 868 22" fill="none" stroke="#35D6E8" stroke-opacity=".42" stroke-width="2.5" stroke-dasharray="2 7" stroke-linecap="round"/>
+      <text x="470" y="96" fill="#6B7A8D" font-size="10" font-family="IBM Plex Mono" text-anchor="middle">— ab hier reine Prognose —</text>
+      <!-- saturation note: timing is genuinely uncertain -->
+      <text x="648" y="40" fill="#F4B23E" font-size="10.5" font-family="IBM Plex Mono">Sättigung: Zeitpunkt ungewiss</text>
+      <text x="648" y="54" fill="#6B7A8D" font-size="10.5" font-family="IBM Plex Mono">Schätzungen weit auseinander:</text>
+      <text x="648" y="68" fill="#6B7A8D" font-size="10.5" font-family="IBM Plex Mono">BofA ~2060 (3 Mrd.) · MS ~2050 (1 Mrd.)</text>
+      <!-- movable marker (repositioned by JS when a phase is clicked) -->
+      <line id="mline" x1="110" y1="40" x2="110" y2="190" stroke="#35D6E8" stroke-dasharray="4 4" stroke-width="1.5"/>
+      <circle id="mring" cx="110" cy="178" r="13" fill="none" stroke="#35D6E8" stroke-opacity=".5"><animate attributeName="r" values="9;18;9" dur="2.4s" repeatCount="indefinite"/><animate attributeName="stroke-opacity" values=".6;0;.6" dur="2.4s" repeatCount="indefinite"/></circle>
+      <circle id="mdot" cx="110" cy="178" r="7" fill="#35D6E8"/>
+      <text id="mlabel" x="110" y="32" fill="#35D6E8" font-size="13" font-family="IBM Plex Mono" text-anchor="middle">WIR SIND HIER</text>
+      <text id="msub" x="110" y="208" fill="#9FB0C0" font-size="10.5" font-family="IBM Plex Mono" text-anchor="middle">2026 — Fuß der Kurve</text>
+      <!-- year ticks -->
+      <text x="40" y="222" fill="#6B7A8D" font-size="10.5" font-family="IBM Plex Mono">2024</text>
+      <text x="310" y="222" fill="#6B7A8D" font-size="10.5" font-family="IBM Plex Mono" text-anchor="middle">2032</text>
+      <text x="520" y="222" fill="#6B7A8D" font-size="10.5" font-family="IBM Plex Mono" text-anchor="middle">2040</text>
+      <text x="868" y="222" fill="#6B7A8D" font-size="10.5" font-family="IBM Plex Mono" text-anchor="end">2060</text>
+    </svg>
+    <p class="chain-hint" style="margin:14px 0 4px">↳ Klicke eine Phase an — die Erklärung öffnet sich unten, der Punkt wandert mit.</p>
+    <div class="phase-row" id="phaserow"></div>
+    <div id="phasedetail" class="phasedetail"></div>
+  </div>
+</div></section>
+
+<!-- SIGNALKETTE -->
+<section id="kette"><div class="wrap">
+  <div class="sec-head">
+    <span class="eyebrow">Lieferkette</span>
+    <h2>Die Signalkette: vom Licht zum Roboter</h2>
+    <p>Die Lieferkette folgt exakt dem Weg, den ein LiDAR-Signal nimmt: Ein Laser sendet Licht aus, ein Detektor misst, was zurückkommt, ein System macht daraus eine Punktwolke, ein Edge-Gehirn entscheidet, und Aktoren bewegen den Roboter. Jede Stufe ist eine Schicht der Wertschöpfung.</p>
+  </div>
+  <p class="chain-hint">↳ Klicke eine Stufe an, um die Firmen dieser Schicht zu sehen — dann eine Firma für Details.</p>
+  <div class="chainflow" id="chainflow"></div>
+  <div class="legend">
+    <span><span class="swatch" style="background:#35D6E8"></span> Wahrnehmung (Augen) — Laser, Detektor, LiDAR-System</span>
+    <span><span class="swatch" style="background:#F4B23E"></span> Kognition (Gehirn) — Edge-Compute</span>
+    <span><span class="swatch" style="background:#3FD17A"></span> Aktion (Körper) — Aktoren, Motoren</span>
+  </div>
+  <div id="chaindetail" class="inlinepanel"></div>
+</div></section>
+
+<!-- FIRMEN -->
+<section id="firmen"><div class="wrap">
+  <div class="sec-head">
+    <span class="eyebrow">Firmen-Explorer</span>
+    <h2>Wer steckt in jeder Schicht?</h2>
+    <p>Filtere nach Schicht und klicke eine Firma an für Finanzen, Sektor und Aktien-Einordnung. 🟢 reagiert zuerst &amp; am heftigsten · 🟡 bestätigend · 🔴 Risiko.</p>
+  </div>
+  <input id="firmsearch" class="search" type="search" placeholder="Firma oder Ticker suchen…" autocomplete="off">
+  <div class="filters" id="filters"></div>
+  <div class="grid" id="grid"></div>
+  <div id="firmdetail" class="inlinepanel"></div>
+</div></section>
+
+<!-- USE CASES -->
+<section id="usecases"><div class="wrap">
+  <div class="sec-head">
+    <span class="eyebrow">Physical-AI Use Cases</span>
+    <h2>Wohin die Augen kommen</h2>
+    <p>Jeder dieser Anwendungsfälle braucht Wahrnehmung — Kameras, LiDAR, Sensoren. Das ist die Nachfrageseite deiner These. Filtere nach Bereich, klick einen Fall für Reife, Kennzahl, führende Anbieter und Sensor-Bezug. <span class="muted">Quelle: Projekt-Doku (Physical AI Use Cases, Stand Juni 2026).</span></p>
+  </div>
+  <input id="ucsearch" class="search" type="search" placeholder="Use Case suchen…" autocomplete="off">
+  <div class="filters" id="ucfilters"></div>
+  <div class="grid" id="ucgrid"></div>
+  <div id="ucdetail" class="inlinepanel"></div>
+</div></section>
+
+<section id="dash"><div class="wrap">
+  <div class="sec-head">
+    <span class="eyebrow">Frühindikatoren</span>
+    <h2>Die 5 Zahlen, die du pro Quartal checkst</h2>
+    <p>Wenn diese bei den nächsten Berichten weiter grün blinken, kippt die Welle in die Massenproduktion. Der Countdown zeigt die nächsten Pflicht-Checks. <span class="muted">Datenstand: Q1 2026 · zuletzt aktualisiert Juni 2026. Termine voraussichtlich.</span></p>
+  </div>
+  <div class="earnings" id="earnings"></div>
+  <div class="metrics">
+    <div class="metric"><div class="m-top"><div class="n">01</div><span class="trend up">▲ steigend</span></div><div class="h">Robotik-Stückzahl YoY</div><div class="v">Bleibt es 3-stellig? <b>RoboSense +1.458% · Hesai +138%</b></div></div>
+    <div class="metric"><div class="m-top"><div class="n">02</div><span class="trend up">▲ gekippt</span></div><div class="h">Robotik-vs-Auto-Mix</div><div class="v">Steigt der Robotik-Anteil weiter? <b>RoboSense bereits 56%</b></div>
+      <div class="bars">
+        <div class="bar"><span class="muted">Robotik</span><div class="track"><div class="fill" style="width:56%;background:var(--cyan)"></div></div><span class="mono">56%</span></div>
+        <div class="bar"><span class="muted">Auto</span><div class="track"><div class="fill" style="width:44%;background:var(--muted)"></div></div><span class="mono">44%</span></div>
+      </div>
+    </div>
+    <div class="metric"><div class="m-top"><div class="n">03</div><span class="trend flat">— ausstehend</span></div><div class="h">Robotik-UMSATZ-Anteil</div><div class="v">Kippt er über ~30%? <b>Noch ausstehend — die Geld-Wende.</b></div></div>
+    <div class="metric"><div class="m-top"><div class="n">04</div><span class="trend up">▲ wächst</span></div><div class="h">Order-Backlogs</div><div class="v">Steigen oder fallen? <b>RoboSense &gt;9 Mio. · Hesai &gt;6 Mio.</b></div></div>
+    <div class="metric"><div class="m-top"><div class="n">05</div><span class="trend down">▼ fällt</span></div><div class="h">Preis pro Einheit (ASP)</div><div class="v">Fällt = gut fürs Volumen, Warnung für Margen.</div></div>
+  </div>
+</div></section>
+
+<!-- GEO -->
+<section id="geo"><div class="wrap">
+  <div class="sec-head">
+    <span class="eyebrow">Geopolitik</span>
+    <h2>Die Landkarte verschiebt sich</h2>
+    <p>Regulierung ist selbst ein Frühwarnsignal: Wer darf in Behörden, Verteidigung und kritische Infrastruktur liefern?</p>
+  </div>
+  <div class="geo">
+    <div class="g"><h4>🚫 Unter Druck (China)</h4><p>Hesai &amp; RoboSense stehen auf der DoD-1260H-Liste (188 Firmen, Juni 2026). Beschaffungsverbot ab 30.6.2026; SAFE LiDAR Act im Verfahren. China dominiert aber weiter den kommerziellen Massenmarkt (~95%).</p></div>
+    <div class="g"><h4>✅ Geschützt (West / Japan / Korea)</h4><p>„Vertrauenswürdige" Anbieter — Ouster, Aeva, Innoviz, Valeo, Seyond (US-Produktion) sowie Sony — gewinnen im Behörden- und Verteidigungsgeschäft, weil sie auf keiner schwarzen Liste stehen.</p></div>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <p class="disc"><b style="color:var(--amber)">Keine Anlageberatung.</b> Dies ist eine strukturelle Markt- und Lieferketten-Analyse zu Beobachtungszwecken, kein Kauf-/Verkaufsrat. Daten: zuletzt gemeldete Quartalszahlen (Q1 2026, gemeldet April–Mai 2026) aus öffentlichen Earnings-Releases und Branchenquellen (Yole, Counterpoint, Unternehmensmeldungen). Chinesische Zahlen sind nicht-GAAP/IFRS-gemischt; Sony, STMicro und onsemi schlüsseln keinen LiDAR-Detektor-Umsatz separat aus — ihre Signalkraft liegt in Produktlaunches und Design-Wins. Stückzahl- und Umsatz-Mix laufen wegen Preisunterschieden Robotik vs. Auto stark auseinander. Marktprognosen sind Szenarien, keine Fakten. Kurse und Bewertungen ändern sich täglich; vor jeder Entscheidung selbst prüfen.</p>
+</div></footer>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<script>
+const LAYERS = {
+  laser:{name:"Licht / Laser",color:"#35D6E8"},
+  detector:{name:"Optik / Detektor",color:"#35D6E8"},
+  system:{name:"LiDAR-System",color:"#35D6E8"},
+  compute:{name:"Edge-Gehirn",color:"#F4B23E"},
+  actuator:{name:"Aktoren / Motoren",color:"#3FD17A"}
+};
+
+const COMPANIES = [
+ // ---- SYSTEMS ----
+ {id:"robosense",name:"RoboSense",ticker:"2498.HK",exch:"Hongkong",layer:"system",region:"China",trade:1,status:"hot",
+  role:"Weltmarktführer Robotik-LiDAR; eigene SPAD-SoC + VCSEL-Chips.",
+  q1:"Umsatz RMB 458,8 Mio. (~$67,7M), +39,9% YoY · Gesamtstückzahl 330.300 (+204%) · Robotik 185.500 (+1.458,8%, erstmals 56% = über Auto) · Bruttomarge 21,7% · Nettoverlust RMB 64M (−36% YoY)",
+  fin:"FY2025: Umsatz ~RMB 1,94 Mrd.; erstes profitables Quartal Q4 2025. Backlog >9 Mio. ADAS. Guidance 2026: 2–2,7 Mio. Einheiten (2–3× 2025).",
+  signal:"Schärfster Frühindikator: hier ist die Stückzahl-Wende zuerst passiert.",
+  note:"<b>DoD-1260H-gelistet (Juni 2026).</b> Hochvolatil, China-Risiko — als Signalgeber top, als Investment riskant."},
+
+ {id:"hesai",name:"Hesai Group",ticker:"HSAI",exch:"Nasdaq / HKEX 2525",layer:"system",region:"China",trade:1,status:"hot",
+  role:"Globaler Marktführer Automotive-LiDAR (~43% Long-Range-ADAS); expandiert in Robotik.",
+  q1:"Umsatz $98,7M, +29,6% YoY · Nettogewinn RMB 18,3M (4. Profit-Quartal in Folge) · Stückzahl 471.723 (+141%), davon Robotik 118.282 (+138%) · Bruttomarge 39,1%",
+  fin:"FY2025: Umsatz RMB 3,03 Mrd. (+45,8%), erster Voll-Jahres-Gewinn der Branche. Backlog >6 Mio. Guidance 2026: 3–3,5 Mio. Einheiten. Kapazität verdoppelt auf 4 Mio./Jahr, Thailand-Werk 2027.",
+  signal:"Volumen-König; Monatslieferungen >200.000 Stück. Partner Mercedes L3, NVIDIA DRIVE Hyperion 10.",
+  note:"<b>DoD-1260H-gelistet (seit Jan 2024).</b> US-handelbar, aber im Behördengeschäft blockiert."},
+
+ {id:"ouster",name:"Ouster",ticker:"OUST",exch:"NYSE",layer:"system",region:"USA",trade:1,status:"hot",
+  role:"Überlebender US-Champion (aus Velodyne-Fusion); Digital-LiDAR für Industrie, Robotik, Infrastruktur.",
+  q1:"Umsatz $48,6M, +49% YoY (13. Wachstumsquartal in Folge) · >12.600 Einheiten · Bruttomarge GAAP 43% · Nettoverlust $17,5M · Liquidität $174,9M",
+  fin:"Q2-2026-Guidance $49,5–52,5M; Margenziel 35–40%; Profitabilität in ~1 Jahr angestrebt. Detektor-Chip von STMicro gefertigt.",
+  signal:"Sauberstes westliches Robotik-Barometer; Profiteur der China-Restriktionen.",
+  note:"Nicht von DoD-Liste betroffen — der buybare westliche Kanarienvogel."},
+
+ {id:"aeva",name:"Aeva Technologies",ticker:"AEVA",exch:"Nasdaq",layer:"system",region:"USA",trade:1,status:"warm",
+  role:"FMCW-4D-LiDAR — misst auch Geschwindigkeit; Auto, Verteidigung, Fabrik.",
+  q1:"Rekordumsatz $6,3M (+90% YoY) · GAAP-Nettoverlust $35,0M · Liquidität $224,5M",
+  fin:"Production-intent Atlas an Daimler Truck; Integration mit europäischem Passenger-OEM und NVIDIA DRIVE Hyperion.",
+  signal:"Differenziert (Geschwindigkeitsmessung), aber noch sehr kleiner Umsatz.",
+  note:"Frühphase — hohe Verluste, viel Cash. Wette auf FMCW-Durchbruch."},
+
+ {id:"innoviz",name:"Innoviz",ticker:"INVZ",exch:"Nasdaq",layer:"system",region:"Israel",trade:1,status:"risk",
+  role:"Solid-State-LiDAR; Programme mit VW, Mobileye, Daimler Truck.",
+  q1:"Umsatz $7,1M (von $17,4M gefallen — verschobene NRE-Meilensteine) · Nettoverlust $26,2M · Liquidität $60,1M",
+  fin:"FY2026-Ziel $67–73M reiterated. Neuer Vorstoß in Verteidigung/Homeland Security. Aktie −23% nach Earnings-Miss.",
+  signal:"Lumpy/unstet — Umsatz schwankt mit Projekt-Meilensteinen.",
+  note:"<b>Niedrige Liquidität, volatil.</b> Höheres Pleiterisiko-Profil als Ouster/Aeva."},
+
+ {id:"luminar",name:"Luminar",ticker:"LAZRQ (OTC)",exch:"delisted",layer:"system",region:"USA",trade:0,status:"risk",
+  role:"Einst höchstbewerteter US-LiDAR-Player.",
+  q1:"<b>Chapter 11 (15. Dez 2025).</b> Schulden $508M vs. Vermögen $189M. Halbleiter-Tochter LSI für $110M verkauft.",
+  fin:"Volvo-Vertragsstreit, CEO abgesetzt. LiDAR-Assets für ~$22M verkauft.",
+  signal:"Mahnmal: zeigt das Profitabilitäts-Risiko von Hardware-Pure-Plays.",
+  note:"<b>Insolvent.</b> Hier als Warnsignal gelistet, nicht als Chance."},
+
+ {id:"seyond",name:"Seyond (ehem. Innovusion)",ticker:"02665.HK",exch:"Hongkong",layer:"system",region:"USA/China",trade:1,status:"warm",
+  role:"Strategisch als „vertrauenswürdiger Partner“ positioniert — US-Produktionslinien.",
+  q1:"CES 2026: Hummingbird D1 (Solid-State, massenproduktionsbereit) + D1-R für Robotik. Falcon = NIO-Standardausstattung.",
+  fin:"Robin-Serie für Robotik/Industrie. FY2025-Ergebnisse März 2026 berichtet.",
+  signal:"Profiteur des „raus mit China“-Trends durch US-Fertigung.",
+  note:"Übergangsprofil zwischen China-Wurzeln und West-Positionierung."},
+
+ {id:"valeo",name:"Valeo",ticker:"FR (Euronext)",exch:"Paris",layer:"system",region:"Frankreich",trade:1,status:"warm",
+  role:"Erster Massenhersteller von Automotive-LiDAR (SCALA); Tier-1-Zulieferer.",
+  q1:"Konzern-Q1: Umsatz €5,12 Mrd. (−3,6% YoY, +1,3% l-f-l). LiDAR ist nur ein kleiner Teil.",
+  fin:"SCALA 3 für L3/L4-Robotaxi; Bestellungen >€1 Mrd.; >150.000 SCALA-Einheiten seit 2017. „Vertrauenswürdiger“ West-Anbieter.",
+  signal:"LiDAR-Story verwässert im großen, niedrigmargigen Autozulieferer.",
+  note:"Wette aufs LiDAR-Gerät UND den zyklischen Automarkt, nicht auf den Sensor selbst."},
+
+ {id:"huawei",name:"Huawei",ticker:"privat",exch:"—",layer:"system",region:"China",trade:0,status:"risk",
+  role:"~19% Automotive-LiDAR 2024 (AITO M9 u.a.).",
+  q1:"Keine separaten LiDAR-Finanzdaten öffentlich.",
+  fin:"Starke vertikale Integration in chinesische Smart-EVs.",
+  signal:"Reine Signalquelle für China-Penetration.",
+  note:"<b>DoD-1260H-gelistet.</b> Nicht handelbar."},
+
+ {id:"livox",name:"Livox / DJI",ticker:"privat",exch:"—",layer:"system",region:"China",trade:0,status:"warm",
+  role:"Mid-360 = De-facto-Standard für günstiges Robotik-SLAM.",
+  q1:"Keine separaten Daten.",
+  fin:"Extrem günstige, kompakte LiDARs treiben das Massen-Robotik-Volumen.",
+  signal:"Reine Signalquelle — wenn Livox-Preise weiter fallen, beschleunigt das Robotik-Volumen.",
+  note:"<b>DJI DoD-gelistet.</b> Nicht handelbar."},
+
+ // ---- DETECTORS ----
+ {id:"sony",name:"Sony (Semiconductor)",ticker:"6758.T",exch:"Tokyo",layer:"detector",region:"Japan",trade:1,status:"warm",
+  role:"Pionier des gestapelten SPAD-dToF-Sensors (Herzstück im LiDAR); Bildsensor-Weltführer ~43%.",
+  q1:"I&SS-Sparte FY2025: Umsatz +20%, operatives Ergebnis +37% (Rekord) — aber smartphone-getrieben. Neuer LiDAR-Sensor IMX479 (300m, 37% PDE) gelauncht.",
+  fin:"Konzern: ~12er KGV, fair bewertet, stabil durch Gaming/Musik/Film. Sensoren ~17% Umsatz / ~25% Gewinn. TSMC-JV (fab-lite).",
+  signal:"Neue SPAD-Generationen = OEMs planen mehr LiDAR. Versteckte Sensor-Option ohne KI-Hype-Aufschlag.",
+  note:"Konglomerat — Sensor-Wette verwässert. Schlüsselt keinen LiDAR-Umsatz separat aus."},
+
+ {id:"stmicro",name:"STMicroelectronics",ticker:"STM",exch:"NYSE / Paris",layer:"detector",region:"Schweiz/EU",trade:1,status:"warm",
+  role:"Fertigt Ousters SPAD-„L3“-Chip; direkter Sony-Rivale beim Detektor.",
+  q1:"Umsatz $3,10 Mrd. (+23% YoY), Bruttomarge 33,8%; Erholung läuft nach schwachem 2025.",
+  fin:"2026-Story ist datacenter-/Silizium-Photonik-getrieben (Data-Center-Ziel auf ~$1 Mrd. angehoben). Aktie 2026 ~verdreifacht → Forward-P/E ~40 (teuer).",
+  signal:"Bester europäischer Sony-Rivale beim SPAD — aber LiDAR geht im Konzern unter.",
+  note:"Kein separat ausgewiesener LiDAR-Umsatz. Profiteur der EU-„raus mit China“-Regeln."},
+
+ {id:"onsemi",name:"onsemi",ticker:"ON",exch:"Nasdaq",layer:"detector",region:"USA",trade:1,status:"warm",
+  role:"SiPM/SPAD-Arrays für LiDAR (aus SensL).",
+  q1:"Hyperlux ID (2025) ist iToF für Industrie/Robotik — nicht Automotive-dToF.",
+  fin:"Breiter Automotive-/Industrie-Halbleiter; LiDAR ist Nebenanwendung.",
+  signal:"Dritter Detektor-Player neben Sony und ST.",
+  note:"Hyperlux ID nicht mit Automotive-dToF-LiDAR verwechseln."},
+
+ // ---- LASER ----
+ {id:"amsosram",name:"ams OSRAM",ticker:"AMS",exch:"SIX Zürich",layer:"laser",region:"Österreich",trade:1,status:"warm",
+  role:"Reinster börsennotierter LiDAR-Laser-Proxy: VCSEL, Edge-Emitter, dToF-Module.",
+  q1:"Umsatz €796M, bereinigte EBITDA-Marge 16,5% (oberes Ende) · Halbleiter-Kern +8–9% l-f-l · Nettoverlust €72M (Finanzierungskosten)",
+  fin:"In KI-Photonik eingestiegen (Entwicklungsvereinbarung Datacenter); Pfad zu positivem FCF 2027. Verkauft Bildsensor-Linie an indie.",
+  signal:"Wenn VCSEL-Auslastung anzieht, ist das ein Laser-Frühsignal.",
+  note:"Small-Cap-Turnaround mit Schuldenlast — höhere Chance, höheres Risiko."},
+
+ {id:"lumentum",name:"Lumentum",ticker:"LITE",exch:"Nasdaq",layer:"laser",region:"USA",trade:1,status:"warm",
+  role:"905/940nm-VCSEL-Arrays & 1550nm-Laser; >10 Mrd. Emitter ausgeliefert.",
+  q1:"Q3 FY26: Rekordumsatz $808,4M (+90% YoY) · NVIDIA investierte $2 Mrd. (März 2026)",
+  fin:"M-Series 100W/400W für 128/256-Line-LiDAR.",
+  signal:"Laser-Kapazitäts-/InP-Indikator.",
+  note:"<b>Wachstum ist datacenter-getrieben, nicht LiDAR</b> — nur eingeschränkt als LiDAR-Signal nutzbar."},
+
+ {id:"coherent",name:"Coherent",ticker:"COHR",exch:"NYSE",layer:"laser",region:"USA",trade:1,status:"warm",
+  role:"InP-Laser, VCSEL, EML; verdoppelt 6-Zoll-InP-Kapazität (Texas).",
+  q1:"Q3 FY26: Umsatz $1,81 Mrd. (+21% YoY) · NVIDIA investierte $2 Mrd. (März 2026)",
+  fin:"InP-Kapazität überwiegend Datacom; LiDAR ist Nebenanwendung.",
+  signal:"InP-Laser-Kapazität als Frühsignal für die gesamte Photonik.",
+  note:"<b>Ebenfalls datacenter-/AI-getrieben</b> — kein reines LiDAR-Nachfragesignal."},
+
+ // ---- COMPUTE ----
+ {id:"nvidia",name:"NVIDIA",ticker:"NVDA",exch:"Nasdaq",layer:"compute",region:"USA",trade:1,status:"hot",
+  role:"Jetson Thor = De-facto-„Gehirn“ für Humanoide/Roboter. Das stärkste „egal wer gewinnt“.",
+  q1:"Jetson Thor allgemein verfügbar; 2.070 FP4 TFLOPS, 7,5× vs. Orin.",
+  fin:"Early Adopters: Figure, Boston Dynamics, Amazon Robotics, Caterpillar, Agility. >2 Mio. Entwickler auf dem Robotik-Stack. DRIVE AGX Thor für 2026er Autos.",
+  signal:"Jeder Roboter braucht ein Gehirn — und das ist meist NVIDIA.",
+  note:"Achtung Überschneidung: NVIDIA ist auch deine Compute-/Memory-Wette — bei Rotation streust du weniger als es scheint."},
+
+ {id:"ambarella",name:"Ambarella",ticker:"AMBA",exch:"Nasdaq",layer:"compute",region:"USA",trade:1,status:"hot",
+  role:"Edge-Vision-SoCs für Kameras + Sensorfusion in Robotik.",
+  q1:"Q1 FY26: Umsatz $85,9M (+57,6% YoY), Bruttomarge 62%; >70% Umsatz aus Edge-AI.",
+  fin:">46 Mio. kumulierte Edge-AI-SoCs; 15+ Robotik-Design-Wins (>$100M Lifetime); Hanwha-Vertrag >$800M.",
+  signal:"Robotik-Design-Wins sind ein direktes Frühsignal.",
+  note:"Volatil (small-cap), aber reiner Edge-Robotik-Profiteur."},
+
+ {id:"mobileye",name:"Mobileye",ticker:"MBLY",exch:"Nasdaq",layer:"compute",region:"USA/Israel",trade:1,status:"warm",
+  role:"EyeQ-SoC für ADAS/AV; Vorstoß in „Physical AI“ (AV + Humanoide).",
+  q1:"Umsatz $558M (+27% YoY), EyeQ-Nachfrage +28%.",
+  fin:"FY2026-Guidance $1,94–2,02 Mrd. 8-Jahres-Pipeline $24,5 Mrd. (+42% seit 2022). Mentee-Robotics-Akquisition.",
+  signal:"Pipeline-Wachstum als Auto-/AV-Frühsignal.",
+  note:"Stärker Auto- als Robotik-fokussiert (noch)."},
+
+ {id:"qualcomm",name:"Qualcomm",ticker:"QCOM",exch:"Nasdaq",layer:"compute",region:"USA",trade:1,status:"warm",
+  role:"Dragonwing IQ10 — energieeffiziente Jetson-Alternative.",
+  q1:"5 Edge-Akquisitionen in 18 Monaten (Arduino, Edge Impulse, Foundries.io).",
+  fin:"Greift NVIDIAs Robotik-Moat von der Effizienzseite an.",
+  signal:"Wenn Qualcomm Robotik-Design-Wins meldet, verschärft sich der Compute-Wettbewerb.",
+  note:"Robotik ist kleiner Teil eines riesigen Smartphone-/Auto-Konzerns."},
+
+ // ---- ACTUATORS ----
+ {id:"harmonic",name:"Harmonic Drive Systems",ticker:"6324.T",exch:"Tokyo",layer:"actuator",region:"Japan",trade:1,status:"warm",
+  role:"Präzisions-Wellgetriebe (Harmonic Drives) für Roboter-Gelenke — der „Muskel“.",
+  q1:"Bruttomargen der Branche 30–40% dank hoher technologischer Barrieren.",
+  fin:"Japanisches Quasi-Duopol mit Nabtesco; jeder Knickarm-/Humanoid-Roboter braucht mehrere Reduzierer.",
+  signal:"Auftragseingang ein Frühsignal für Roboter-Stückzahlen.",
+  note:"<b>China-Erosion:</b> Leaderdrive & Co. unterbieten zu 35–60% des Preises — Moat bröckelt."},
+
+ {id:"nabtesco",name:"Nabtesco",ticker:"6268.T",exch:"Tokyo",layer:"actuator",region:"Japan",trade:1,status:"warm",
+  role:"RV-Reduzierer für schwere Robotergelenke (Hüfte, Schulter); ~60% Weltmarkt.",
+  q1:"Diversifizierter Maschinenbaukonzern; Präzisionsgetriebe sind das Kerngeschäft.",
+  fin:"Werke in Japan und Changzhou (China).",
+  signal:"Industrieroboter-Nachfrage als Frühsignal.",
+  note:"<b>China-Lokalisierung</b> setzt auch hier den Preis unter Druck."}
+];
+
+// ================= DATEN — HIER AKTUALISIEREN =================
+// Datenstand und nächste Berichtstermine (voraussichtlich). Bei Updates nur diese Werte ändern.
+const META = {
+  dataStand: "Q1 2026",
+  aktualisiert: "Juni 2026",
+  earnings: [
+    {firm:"Ouster",       date:"2026-08-07", note:"Q2 2026"},
+    {firm:"Sony",         date:"2026-08-07", note:"Q1 FY2026"},
+    {firm:"STMicro",      date:"2026-07-24", note:"Q2 2026"},
+    {firm:"Hesai",        date:"2026-08-26", note:"Q2 2026"},
+    {firm:"RoboSense",    date:"2026-08-26", note:"Halbjahr 2026"},
+    {firm:"Ambarella",    date:"2026-08-27", note:"Q2 FY2026"}
+  ]
+};
+// Bewertung je Firma (Stand Juni 2026, ändert sich täglich). Leer lassen, wenn unbekannt.
+const VAL = {
+  sony:"~12x KGV · Marktkap. ~121 Mrd $ · −18% (52 W)",
+  stmicro:"Forward-P/E ~40 (teuer) · ~70 Mrd $ · +207% (1 J)",
+  amsosram:"Small-Cap-Turnaround · noch defizitär (Q1-Nettoverlust 72 Mio €)",
+  nvidia:"Mega-Cap · KI-Leader, hoch bewertet",
+  lumentum:"datacenter-getrieben · NVIDIA-Beteiligung 2 Mrd $",
+  coherent:"datacenter-getrieben · NVIDIA-Beteiligung 2 Mrd $",
+  ambarella:"Small-Cap · Bruttomarge ~62%, wachstumsbewertet",
+  mobileye:"Pipeline 24,5 Mrd $ · auto-/AV-bewertet",
+  onsemi:"breiter Halbleiter · zyklisch bewertet",
+  qualcomm:"Mega-Cap · günstiger als KI-Peers",
+  valeo:"niedrig bewertet · zyklischer Autozulieferer",
+  hesai:"GAAP-profitabel · wächst, China-Risiko im Kurs",
+  robosense:"noch defizitär · über Umsatzmultiple bewertet, China-Risiko",
+  ouster:"noch defizitär · Liquidität 174,9 Mio $, westliche Prämie",
+  aeva:"noch defizitär · viel Cash (224,5 Mio $), spekulativ",
+  innoviz:"noch defizitär · niedrige Liquidität (60,1 Mio $)",
+  luminar:"insolvent (Chapter 11) — keine sinnvolle Bewertung",
+  harmonic:"Premium-Bewertung · Reducer-Duopol, China-Erosion",
+  nabtesco:"diversifizierter Maschinenbau · moderat bewertet",
+  seyond:"jung/klein · schwer bewertbar",
+  huawei:"nicht handelbar",
+  livox:"nicht handelbar (Teil von DJI)"
+};
+// ============================================================
+
+// plain-language: what each firm actually does in the robot's signal chain
+const CTX = {
+ robosense:"Baut die kompletten LiDAR-Sensoren, also die „Augen“, die ein Roboter aufsetzt, um seine Umgebung in 3D zu sehen. Zusätzlich entwickeln sie inzwischen die lichtempfindlichen Chips selbst. Wenn dieser Hersteller plötzlich viel mehr an Roboterfirmen liefert, ist das das früheste Zeichen, dass die Welle anrollt.",
+ hesai:"Liefert die LiDAR-Augen vor allem für Autos, jetzt zunehmend auch für Roboter. Als Volumen-König ist seine monatliche Stückzahl praktisch der Pulsschlag des ganzen Marktes — sie zeigt, wie viele „sehende“ Maschinen gerade weltweit gebaut werden.",
+ ouster:"Baut LiDAR-Augen für Fabriken, Lager, Drohnen und Infrastruktur — also genau deine kleinen Roboter, nicht nur Autos. Weil es eine US-Firma ist, darf es auch im Behörden- und Verteidigungsmarkt liefern, wo China rausfliegt.",
+ aeva:"Baut eine speziellere Art von LiDAR-Auge, das nicht nur Entfernung, sondern auch Tempo direkt misst. Noch winzig im Umsatz — interessant als Wette, ob sich diese Technik durchsetzt.",
+ innoviz:"Baut Solid-State-LiDAR-Augen vor allem für Autohersteller. Der Umsatz schwankt stark je nach Projekt-Meilenstein, deshalb als Signalgeber unzuverlässiger.",
+ luminar:"War mal ein Star unter den LiDAR-Augen-Bauern, ist aber pleite. Steht hier nur als Mahnmal: Reine Hardware-Hersteller können trotz Hype scheitern.",
+ seyond:"Baut LiDAR-Augen und positioniert sich bewusst als „westlich vertrauenswürdig“ mit US-Fertigung — um vom Rauswurf der China-Anbieter zu profitieren.",
+ valeo:"Großer Autozulieferer, der als Erster LiDAR-Augen in Serie gebaut hat. Aber LiDAR ist nur ein winziger Teil — du kaufst vor allem einen klassischen, schwankungsanfälligen Autozulieferer.",
+ huawei:"Baut LiDAR-Augen tief integriert in chinesische E-Autos. Nicht handelbar — nur als Gradmesser dafür, wie schnell China LiDAR in Autos einbaut.",
+ livox:"Macht extrem billige, kompakte LiDAR-Augen, die für viele kleine Roboter der De-facto-Standard sind. Sinkende Preise hier = mehr Roboter können sich Augen leisten = Beschleuniger der Welle.",
+ sony:"Baut nicht das ganze LiDAR, sondern das lichtempfindliche Herzstück darin — den Sensorchip, der das zurückkommende Licht „spürt“. Genau die Schaufel an der Quelle: egal welcher LiDAR-Hersteller gewinnt, der Chip kommt oft von hier. Daneben Weltmarktführer bei normalen Kamerasensoren.",
+ stmicro:"Baut ebenfalls das lichtempfindliche Herzstück (den SPAD-Detektor) — fertigt z.B. den Chip für Ouster. Direkter Rivale von Sony bei genau diesem Bauteil, aber als Aktie gerade teuer und stärker vom Rechenzentrums-Geschäft getrieben.",
+ onsemi:"Dritter Hersteller der lichtempfindlichen Detektor-Chips. Achtung: sein neues Produkt zielt auf Industrie-Roboter, nicht auf Auto-LiDAR.",
+ amsosram:"Baut die Laser und Lichtquellen, die ein LiDAR aussendet — die andere Hälfte des „Lichts“ neben dem Detektor. Reinste börsennotierte Wette auf die LiDAR-Laser, aber kleiner Sanierungsfall.",
+ lumentum:"Baut Hochleistungs-Laser, auch für LiDAR. Vorsicht: Sein aktuelles Wachstum kommt fast nur aus KI-Rechenzentren, nicht aus LiDAR — taugt eher als Indikator für Laser-Kapazität allgemein.",
+ coherent:"Baut Laser und das Spezialmaterial (Indiumphosphid) dafür. Wie Lumentum gerade KI-Rechenzentrums-getrieben; LiDAR ist nur eine Nebenanwendung.",
+ nvidia:"Baut das „Gehirn“ (Jetson), das die LiDAR-Punktwolke verarbeitet und dem Roboter sagt, was er tun soll. Fast jeder Humanoide nutzt es — das stärkste „egal wer gewinnt“. Aber Achtung: Das hast du über deine NVIDIA-Position schon, du streust also weniger als es scheint.",
+ ambarella:"Baut sparsame Chips, die Kamerabilder direkt im Roboter verstehen (Edge-Vision). Jeder neue Roboter-Design-Win hier ist ein direktes Frühsignal, dass mehr sehende Maschinen kommen.",
+ mobileye:"Baut die Seh-und-Entscheidungs-Chips für Fahrassistenz und autonome Autos, jetzt auch Richtung Roboter. Die wachsende Auftragspipeline ist ein Auto-/AV-Frühsignal.",
+ qualcomm:"Greift NVIDIAs Roboter-Gehirn mit einer sparsameren Alternative an. Wenn hier Roboter-Aufträge auftauchen, verschärft sich der Wettbewerb um das „Gehirn“.",
+ harmonic:"Baut die Präzisionsgetriebe in den Robotergelenken — also die „Muskeln/Sehnen“, die Bewegung übertragen. Jeder Arm und jedes Bein braucht mehrere davon. Auftragseingang = wie viele Roboterkörper gerade entstehen.",
+ nabtesco:"Baut die schweren Präzisionsgetriebe für große Robotergelenke (Hüfte, Schulter). Zusammen mit Harmonic ein japanisches Quasi-Duopol — aber China holt preislich auf."
+};
+
+// stage metadata for the interactive chain
+const STAGES = [
+ {key:"laser",num:"①",t:"Licht / Laser",d:"Sendet das Licht aus, das später zurückgemessen wird.",color:"#35D6E8"},
+ {key:"detector",num:"②",t:"Optik / Detektor",d:"Das lichtempfindliche Herzstück — misst, was zurückkommt.",color:"#35D6E8"},
+ {key:"system",num:"③",t:"LiDAR-System",d:"Macht aus dem Licht eine 3D-Punktwolke — die „Augen“.",color:"#35D6E8"},
+ {key:"compute",num:"④",t:"Edge-Gehirn",d:"Verarbeitet die Punktwolke und entscheidet.",color:"#F4B23E"},
+ {key:"actuator",num:"⑤",t:"Aktoren / Motoren",d:"Bewegen den Roboter — die „Muskeln“.",color:"#3FD17A"}
+];
+// adoption phases — explanations grounded in the user's own documentation
+const PHASES = [
+ {id:'fruh',year:2024.5,yr:'2024–25',t:'Frühphase',d:'Pilot, Prototypen, kleine Stückzahlen',here:false,
+  body:'Laut deiner Doku (Physical-AI-Compute Explosion): rund 13.000 humanoide Roboter weltweit 2025 — eine Verfünffachung gegenüber 2024. Vorne AgiBot (5.168) und Unitree (~5.500), Tesla Optimus nur ~800. Industrieroboter laufen längst im Massenbetrieb (4,66 Mio. weltweit, IFR), kleine Roboter und Drohnen bereits in Millionen. Alles ist angebotsbegrenzt: HBM-Speicher für 2026 ausverkauft, CoWoS-Packaging bei nur 75k Wafer/Monat.',
+  src:'Physical-AI-Compute Explosion · Physical AI Global Market'},
+ {id:'stueck',year:2026,yr:'Q1 2026',t:'Stückzahl-Wende',d:'Robotik-LiDAR überholt Auto bei Einheiten',here:true,
+  body:'Wo wir jetzt stehen. RoboSense: Robotik-LiDAR +1.458,8% gegenüber Vorjahr und erstmals über dem Auto-Geschäft (56% der Stückzahlen). Hesai +141%. Wichtig: Der Wendepunkt ist als STÜCKZAHL sichtbar, noch nicht als Umsatz — Robotik-Sensoren sind viel billiger als Auto-LiDAR. NVIDIAs Physical-AI-Umsatz ist erst rund 3% des Konzerns. Wir stehen am Fuß der steilen Kurve, nicht in ihrer Mitte.',
+  src:'LiDAR-Wertschöpfungskette · Physical-AI-Compute Explosion'},
+ {id:'umsatz',year:2028,yr:'2027–29',t:'Umsatz-Wende',d:'Geld folgt den Stückzahlen; Hochlauf',here:false,
+  body:'Laut Doku der echte Volumen-Inflection. Counterpoint erwartet über 100.000 Humanoide bis 2027. Die Hersteller skalieren: Unitree hat einen IPO-Antrag gestellt und committet sich zu 75.000 Humanoiden plus 115.000 Vierbeinern pro Jahr, AgiBot rampte in Q1 2026 von 1.000 auf 10.000 Einheiten in nur drei Monaten, Figures BotQ-Fabrik baut einen Roboter alle 90 Minuten. Big Tech setzt sie bereits ein: Amazon (Amazon Robotics und Agility), Boston Dynamics, Caterpillar und Meta gehören zu den frühen Nutzern von NVIDIAs Jetson Thor. SemiAnalysis erwartet den Robotik-Lernsprung irgendwann 2027. Gleichzeitig löst sich der Engpass — neue HBM-Kapazität ab 2027, CoWoS verdoppelt sich Ende 2026. Pilot wird zu limitierter Produktion.',
+  src:'Physical-AI-Compute Explosion · LiDAR-Wertschöpfungskette'},
+ {id:'masse',year:2031.5,yr:'2028–35',t:'Massenproduktion',d:'Millionen Roboter — alle Sensor-Aktien',here:false,
+  body:'Deine Doku nennt ernsthafte Produktionsskala (über 50k/Jahr) für 2028–2030. BofA: 90k (2026) auf 1,2 Mio. (2030) auf 10 Mio. (2035), 86% CAGR. Goldman-Basisfall: über 250.000/Jahr 2030. Die Stücklisten-Kosten fallen von 35.000 $ (2025) auf 17.000 $ (2030) — das treibt das Volumen. Hier wachsen tatsächlich alle Sensor-Aktien: der Massenmarkt für Augen und Aktoren.',
+  src:'Physical AI Global Market · Physical-AI-Compute Explosion'},
+ {id:'reife',year:2047,yr:'2035–60',t:'Reife / Sättigung',d:'Erst hier flacht die Kurve ab',here:false,
+  body:'Wann die Kurve wirklich abflacht, weiß niemand sicher — es liegt Jahrzehnte entfernt und die Schätzungen klaffen weit auseinander. BofA: 3 Milliarden installierte Einheiten erst um etwa 2060. Morgan Stanley: 1 Mrd. bis 2050, Mass-Adoption-Inflection erst Mitte der 2030er, 5 Bio. $ Markt bis 2050. Sicher ist nur, dass es nicht schon 2030 ist. Bis zur Sättigung ist der lange, steile Teil der Kurve der eigentliche Investitionszeitraum — der Zeitpunkt des Abflachens selbst bleibt offen.',
+  src:'Physical AI Global Market · Physical-AI-Compute Explosion'}
+];
+const filtersEl = document.getElementById("filters");
+const gridEl = document.getElementById("grid");
+let active = "all";
+let firmQuery="";
+const order = ["all","laser","detector","system","compute","actuator"];
+const labels = {all:"Alle",laser:"① Laser",detector:"② Detektor",system:"③ LiDAR-System",compute:"④ Edge-Gehirn",actuator:"⑤ Aktoren"};
+order.forEach(k=>{
+  const b=document.createElement("button");
+  b.className="fbtn"+(k==="all"?" on":"");
+  b.textContent=labels[k]; b.dataset.k=k;
+  b.onclick=()=>{active=k;document.querySelectorAll("#filters .fbtn").forEach(x=>x.classList.toggle("on",x.dataset.k===k));saveState();render();};
+  filtersEl.appendChild(b);
+});
+const firmSearch=document.getElementById("firmsearch");
+firmSearch.addEventListener("input",()=>{firmQuery=firmSearch.value.trim().toLowerCase();render();});
+
+function render(){
+  gridEl.innerHTML="";
+  const list=COMPANIES.filter(c=>(active==="all"||c.layer===active) &&
+    (firmQuery===""||c.name.toLowerCase().includes(firmQuery)||c.ticker.toLowerCase().includes(firmQuery)||c.region.toLowerCase().includes(firmQuery)));
+  if(list.length===0){gridEl.innerHTML='<div class="empty">Keine Firma gefunden.</div>';return;}
+  list.forEach(c=>{
+    const accent=LAYERS[c.layer].color;
+    const el=document.createElement("div");
+    el.className="card"; el.dataset.id=c.id; el.style.setProperty("--accent",accent);
+    el.innerHTML=`
+      <div class="tk">${c.ticker}</div>
+      <div class="nm">${c.name}</div>
+      <div class="rl">${c.role}</div>
+      <div class="foot">
+        <span class="pill" style="color:${accent};border-color:${accent}55">${LAYERS[c.layer].name}</span>
+        <span class="led ${c.status}"><i></i>${c.status==="hot"?"zuerst":c.status==="warm"?"bestätigend":"Risiko"}</span>
+      </div>`;
+    el.onclick=()=>showFirmInGrid(c.id);
+    gridEl.appendChild(el);
+  });
+}
+render();
+
+// ---- inline detail panels (no popups) ----
+const chaindetail=document.getElementById("chaindetail");
+const firmdetail=document.getElementById("firmdetail");
+let chainKey=null, gridFirm=null;
+
+function firmBodyHTML(c){
+  return `
+    <div class="tk">${c.ticker} · ${c.exch}</div>
+    <h4 style="margin-top:3px">${c.name}</h4>
+    <div class="sub">${LAYERS[c.layer].name} · ${c.region} · ${c.trade?'<span style="color:var(--green)">handelbar</span>':'<span style="color:var(--red)">nicht handelbar</span>'} · <span class="led ${c.status}" style="display:inline-flex"><i></i>${c.status==="hot"?"reagiert zuerst":c.status==="warm"?"bestätigend":"Risiko"}</span></div>
+    <div class="ctx">${CTX[c.id]||c.role}</div>
+    <dl class="kv"><dt>Rolle</dt><dd>${c.role}</dd></dl>
+    <dl class="kv"><dt>Letztes Quartal</dt><dd>${c.q1}</dd></dl>
+    <dl class="kv"><dt>Finanzen / Sektor</dt><dd>${c.fin}</dd></dl>
+    ${VAL[c.id]?`<dl class="kv"><dt>Bewertung</dt><dd>${VAL[c.id]} <span class="prog">Stand Juni 2026</span></dd></dl>`:""}
+    <dl class="kv"><dt>Frühsignal</dt><dd>${c.signal}</dd></dl>
+    <div class="note">${c.note}</div>`;
+}
+function firmCardHTML(c){
+  return `<div class="pd-inner" style="border-left-color:${LAYERS[c.layer].color}">${firmBodyHTML(c)}</div>`;
+}
+function layerListHTML(key){
+  const st=STAGES.find(s=>s.key===key), firms=COMPANIES.filter(c=>c.layer===key);
+  const rows=firms.map(c=>`
+    <div class="lp-row" data-id="${c.id}" onclick='showFirmInChain("${c.id}","${key}")'>
+      <div class="l"><div class="nm">${c.name}</div><div class="tk">${c.ticker} · ${c.region}</div></div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <span class="led ${c.status}"><i></i>${c.status==="hot"?"zuerst":c.status==="warm"?"bestätigend":"Risiko"}</span>
+        <span class="go">Details →</span>
+      </div>
+    </div>`).join("");
+  return `<div class="pd-inner" style="border-left-color:${st.color}">
+    <div class="pd-tag" style="color:${st.color}">SCHICHT ${st.num} · ${firms.length} FIRMEN</div>
+    <h4>${st.t}</h4>
+    <p style="color:#A9B7C6">${st.d} Wähle eine Firma — die Liste bleibt sichtbar:</p>
+    <div class="lp-firms" style="margin-top:12px">${rows}</div>
+    <div id="chainfirm" class="chainfirm"></div>
+  </div>`;
+}
+// stage click -> toggle the layer list inline
+function showLayer(key){
+  if(chainKey===key && chaindetail.classList.contains("open") && chaindetail.dataset.view==="list"){
+    chaindetail.classList.remove("open"); chainKey=null;
+    document.querySelectorAll(".snode").forEach(n=>n.classList.remove("sel")); return;
+  }
+  chainKey=key; chaindetail.dataset.view="list";
+  chaindetail.innerHTML=layerListHTML(key);
+  chaindetail.classList.add("open"); writeHash("layer="+key);
+  document.querySelectorAll(".snode").forEach(n=>n.classList.toggle("sel",n.dataset.key===key));
+  setTimeout(()=>chaindetail.scrollIntoView({behavior:"smooth",block:"nearest"}),60);
+}
+// firm click inside the list -> detail appears BELOW the list, list stays visible & clickable
+function showFirmInChain(id,key){
+  // make sure the list for this layer is shown
+  if(chainKey!==key || !document.getElementById("chainfirm")){
+    chainKey=key; chaindetail.dataset.view="list";
+    chaindetail.innerHTML=layerListHTML(key); chaindetail.classList.add("open");
+    document.querySelectorAll(".snode").forEach(n=>n.classList.toggle("sel",n.dataset.key===key));
+  }
+  const cf=document.getElementById("chainfirm");
+  const rows=chaindetail.querySelectorAll(".lp-row");
+  const already=cf.dataset.id===id && cf.innerHTML.trim()!=="";
+  rows.forEach(r=>r.classList.remove("active"));
+  if(already){ cf.innerHTML=""; cf.dataset.id=""; return; } // toggle off
+  rows.forEach(r=>{ if(r.dataset.id===id) r.classList.add("active"); });
+  cf.dataset.id=id;
+  cf.innerHTML=`<div class="chainfirm-card">${firmBodyHTML(COMPANIES.find(c=>c.id===id))}</div>`;
+  setTimeout(()=>cf.scrollIntoView({behavior:"smooth",block:"nearest"}),60);
+}
+// Firmen-Explorer card -> toggle firm detail inline
+function showFirmInGrid(id){
+  if(gridFirm===id && firmdetail.classList.contains("open")){
+    firmdetail.classList.remove("open"); gridFirm=null;
+    document.querySelectorAll(".card").forEach(c=>c.classList.remove("sel")); return;
+  }
+  gridFirm=id;
+  document.querySelectorAll(".card").forEach(c=>c.classList.toggle("sel",c.dataset.id===id));
+  firmdetail.innerHTML=firmCardHTML(COMPANIES.find(c=>c.id===id));
+  firmdetail.classList.add("open"); writeHash("firm="+id);
+  setTimeout(()=>firmdetail.scrollIntoView({behavior:"smooth",block:"nearest"}),60);
+}
+
+// ---- build interactive signal chain ----
+(function(){
+  const cf=document.getElementById("chainflow"); if(!cf)return;
+  STAGES.forEach((st,i)=>{
+    const n=COMPANIES.filter(c=>c.layer===st.key).length;
+    const stage=document.createElement("div"); stage.className="stage";
+    const node=document.createElement("div");
+    node.className="snode"; node.dataset.key=st.key; node.style.setProperty("--accent",st.color);
+    node.innerHTML=`<div class="stnum">${st.num}</div><div class="stt">${st.t}</div>
+      <div class="std">${st.d}</div>
+      <div class="stf"><span>Firmen</span><span class="cnt">${n} →</span></div>`;
+    node.onclick=()=>showLayer(st.key);
+    stage.appendChild(node);
+    const ar=document.createElement("div"); ar.className="arrow";
+    ar.innerHTML=`<span style="position:relative"><span class="lbl">${["Licht","Tiefe","Punktwolke","Befehl"][i]||""}</span>→</span>`;
+    stage.appendChild(ar);
+    cf.appendChild(stage);
+  });
+  // final robot node
+  const stage=document.createElement("div"); stage.className="stage";
+  const robot=document.createElement("div"); robot.className="snode robot";
+  robot.innerHTML=`<div class="stt">🤖 Roboter / Drohne</div>
+    <div class="std" style="flex:none;margin-top:6px">sieht, denkt, handelt</div>`;
+  stage.appendChild(robot); cf.appendChild(stage);
+})();
+
+// ---- sticky nav ----
+const nav=document.getElementById("nav");
+addEventListener("scroll",()=>{nav.classList.toggle("show",scrollY>620);});
+
+// ---- adoption phases: inline panel + travelling marker (no popup) ----
+const phaserow=document.getElementById("phaserow");
+const pdetail=document.getElementById("phasedetail");
+const scurve=document.getElementById("scurve");
+const mdot=document.getElementById("mdot"), mring=document.getElementById("mring"),
+      mline=document.getElementById("mline"), mlabel=document.getElementById("mlabel"),
+      msub=document.getElementById("msub");
+let selPhase=null;
+
+// year -> x on the axis (2024..2060 mapped to x 40..868)
+function yearToX(y){return 40+(y-2024)/(2060-2024)*(868-40);}
+// find the point ON the curve whose x is closest to targetX
+function curvePointAtX(targetX){
+  const L=scurve.getTotalLength(); let best=null,bd=1e9;
+  for(let i=0;i<=200;i++){const pt=scurve.getPointAtLength(L*i/200);
+    const d=Math.abs(pt.x-targetX); if(d<bd){bd=d;best=pt;}}
+  return best;
+}
+function moveMarker(p){
+  const x=yearToX(p.year), pt=curvePointAtX(x);
+  mdot.setAttribute("cx",x); mdot.setAttribute("cy",pt.y);
+  mring.setAttribute("cx",x); mring.setAttribute("cy",pt.y);
+  mline.setAttribute("x1",x); mline.setAttribute("x2",x);
+  mline.setAttribute("y2",pt.y);
+  mlabel.setAttribute("x",x); msub.setAttribute("x",x);
+  mlabel.textContent = p.here ? "WIR SIND HIER" : p.t;
+  msub.textContent = p.here ? "2026 — Fuß der Kurve" : p.yr;
+}
+
+PHASES.forEach(p=>{
+  const el=document.createElement("div");
+  el.className="phase"+(p.here?" here":"");
+  el.dataset.id=p.id;
+  el.innerHTML=`<div class="yr">${p.yr}</div><div class="t">${p.t}</div><div class="d">${p.d}</div>`;
+  el.onclick=()=>openPhase(p.id);
+  phaserow.appendChild(el);
+});
+
+function openPhase(id){
+  const p=PHASES.find(x=>x.id===id);
+  // toggle: clicking the open one closes the panel
+  if(selPhase===id){
+    pdetail.classList.remove("open"); selPhase=null;
+    document.querySelectorAll(".phase").forEach(c=>c.classList.remove("sel"));
+    return;
+  }
+  selPhase=id;
+  document.querySelectorAll(".phase").forEach(c=>c.classList.toggle("sel",c.dataset.id===id));
+  moveMarker(p);
+  pdetail.innerHTML=`<div class="pd-inner">
+    <div class="pd-tag">PHASE · ${p.yr}${p.here?" · WIR SIND HIER":""}</div>
+    <h4>${p.t}</h4>
+    <p>${p.body}</p>
+    <div class="pd-src">Quelle: ${p.src} · Erklärung aus deiner Projekt-Doku · Prognosen sind Szenarien, keine Anlageberatung.</div>
+  </div>`;
+  pdetail.classList.add("open"); writeHash("phase="+id);
+}
+// open the current phase by default so the explanation is already visible
+openPhase(PHASES.find(p=>p.here).id);
+
+// ---- Physical-AI Use Cases (aus der Projekt-Doku) ----
+const TIERS={prod:{l:"Skalierung",c:"tier-prod",col:"#3FD17A"},early:{l:"Frühe Produktion",c:"tier-early",col:"#35D6E8"},pilot:{l:"Pilot",c:"tier-pilot",col:"#F4B23E"},frontier:{l:"Frontier / Forschung",c:"tier-frontier",col:"#A78BFA"}};
+const UCATS=[["alle","Alle"],["mobilitaet","Mobilität"],["medizin","Medizin"],["agrar","Landwirtschaft"],["inspektion","Inspektion"],["industrie","Industrie"],["notfall","Notfall & Sicherheit"],["stadt","Stadt"],["service","Service"],["frontier","Frontier"],["enabler","Enabler"]];
+const CATLABEL=Object.fromEntries(UCATS);
+const USECASES=[
+ {cat:"mobilitaet",name:"Autonomes Fahren",tier:"prod",metric:"Waymo ~500.000 Fahrten/Woche, 170 Mio+ Meilen; Markt ~556 Mrd $ bis 2026.",firms:"Waymo, Tesla FSD, Baidu Apollo, Mobileye",why:"Der größte LiDAR- und Kamera-Abnehmer überhaupt — das reife Volumen, das die Sensorlieferkette heute trägt."},
+ {cat:"mobilitaet",name:"Flugtaxis (eVTOL)",tier:"pilot",metric:"Shenzhen–Hongkong kommerziell seit Jan 2026 (20 Min statt 1 Std, ~110 $); Markt ~23 Mrd $ bis 2028.",firms:"EHang, Joby Aviation, Archer, Lilium",why:"Autonome Flüge brauchen Rundumsicht: Kameras, LiDAR und Radar zur Hinderniserkennung."},
+ {cat:"mobilitaet",name:"Autonome Schiffe",tier:"early",metric:"Erste autonome Linienfähre in Norwegen; Markt ~13 Mrd $ bis 2030.",firms:"Yara Birkeland, Kongsberg, Rolls-Royce Marine",why:"Radar, LiDAR und Kamerafusion für Kollisionsvermeidung auf See."},
+ {cat:"medizin",name:"OP-Roboter (assistiert)",tier:"prod",metric:"Intuitive 11.000+ da-Vinci-Systeme, ~1,8 Mio OPs/Jahr; Markt 64 Mrd $ bis 2034.",firms:"Intuitive da Vinci, Medtronic Hugo (FDA Dez 2025)",why:"3D-Endoskopie und Kraftsensorik — Präzisionssensoren statt LiDAR, aber dieselbe Wahrnehmungs-Wertschöpfung."},
+ {cat:"medizin",name:"Autonome OP",tier:"frontier",metric:"Johns Hopkins SRT-H: erste autonome Gallenblasen-OP 2025.",firms:"Johns Hopkins SRT-H",why:"Gewebeerkennung in Echtzeit per Vision-KI — noch Forschungsstadium."},
+ {cat:"medizin",name:"Pflegeroboter",tier:"pilot",metric:"In US-Kliniken aktiv; Japan investiert Milliarden wegen Demografie.",firms:"Diligent Moxi, Toyota HSR, PARO",why:"Tiefenkameras zur Navigation und Sturzerkennung in belebten Fluren."},
+ {cat:"medizin",name:"Notfall- & AED-Drohnen",tier:"pilot",metric:"Defibrillator in 2 statt 8 Min (Schweden); Zipline Mio. Lieferungen.",firms:"Zipline, Wing, Everon",why:"GPS plus Kamera/Sensorik für Präzisionsabwurf und Landung."},
+ {cat:"medizin",name:"Labor-Roboter",tier:"prod",metric:"Könnte Medikamentenentwicklung von 15 auf 2–3 Jahre verkürzen.",firms:"Recursion, Insilico, Strateos",why:"Vision-Systeme zur Probenerkennung; mehr Mikroskopie- als LiDAR-Sensorik."},
+ {cat:"agrar",name:"Agrar-Drohnen",tier:"prod",metric:"30–50% Wasser gespart, gezielte Pestizidausbringung.",firms:"DJI Agras, XAG, John Deere",why:"Multispektral-Kameras und LiDAR zur Pflanzenanalyse — Millionen-Stückzahlen, schneller als Humanoide."},
+ {cat:"agrar",name:"Ernte-Picker",tier:"pilot",metric:"Agrar-Robotermarkt 20+ Mrd $ bis 2026.",firms:"Abundant Robotics, Tortuga AgTech, Agrobot",why:"Tiefenkameras erkennen reife Früchte — klassischer kleiner Roboter mit Augen."},
+ {cat:"agrar",name:"Tier- & Melkroboter",tier:"prod",metric:"Lely 35.000+ Melkroboter; Krankheit 48 h früher erkannt.",firms:"Lely Astronaut, Connecterra, Cainthus",why:"Kameras und Sensoren überwachen Tiergesundheit rund um die Uhr."},
+ {cat:"agrar",name:"Aquakultur-Roboter",tier:"prod",metric:"24/7-Überwachung, ~20% weniger Futterverschwendung (Norwegen).",firms:"Stingray Marine, XpertSea, Observe",why:"Unterwasserkameras und Vision-KI zur Fischüberwachung."},
+ {cat:"agrar",name:"Forstrobotik",tier:"pilot",metric:"100.000 Samen/Tag, 10× schneller als Menschen.",firms:"DroneSeed, Flashforest, Global Forest Watch",why:"Drohnen mit Kamera/LiDAR kartieren Gelände und pflanzen gezielt."},
+ {cat:"inspektion",name:"Infrastruktur- & Unterwasserdrohnen",tier:"prod",metric:"Ersetzt teure und gefährliche Taucher- und Kletterinspektion.",firms:"Percepto, Saab",why:"LiDAR und hochauflösende Kameras erfassen Risse und Korrosion."},
+ {cat:"inspektion",name:"Klima- & Umweltmonitoring",tier:"prod",metric:"DeepMind-Wettervorhersage 10× präziser; 4.000 autonome Bojen weltweit.",firms:"Tomorrow.io, Pachama, GHGSat",why:"Sensorflotten als planetares Nervensystem — Daten statt nur Bilder."},
+ {cat:"industrie",name:"Industrieroboter",tier:"prod",metric:"3,5 Mio Roboter weltweit; Markt 80+ Mrd $; China 2 Mio+ Bestand.",firms:"FANUC, ABB, KUKA, Universal Robots",why:"Zunehmend Vision-geführt — der reife Kern, der Aktoren- und Sensortechnik trägt."},
+ {cat:"industrie",name:"Lagerroboter",tier:"prod",metric:"Amazon 750.000+ Einheiten; 20–40% niedrigere Lagerkosten, 3–4× schneller.",firms:"Amazon Robotics, Boston Dynamics Stretch, Ocado, Geek+",why:"Computer Vision und LiDAR-SLAM für kollisionsfreie Routen — hier läuft das Volumen schon."},
+ {cat:"industrie",name:"Bergbaurobotik",tier:"prod",metric:"Rio Tinto spart 500 Mio $/Jahr, 30% produktiver.",firms:"Caterpillar, Komatsu, Rio Tinto",why:"LiDAR und Radar für GPS-lose Navigation unter Tage."},
+ {cat:"industrie",name:"Baurobotik",tier:"pilot",metric:"SAM100: 3.000 Ziegel/Tag (Mensch ~500); ICON mit NASA-Vertrag.",firms:"ICON 3D, FBR Hadrian X, SAM100, Boston Dynamics Spot",why:"Tiefensensorik und LiDAR zur Vermessung auf der Baustelle."},
+ {cat:"industrie",name:"Halbleiter-Produktion",tier:"prod",metric:"Ausschuss von 30% auf unter 5%; Defekte 1000× kleiner als ein Haar.",firms:"ASML, Applied Materials, TSMC",why:"Hochpräzise optische Messsysteme — Sensorik im Nanometerbereich."},
+ {cat:"notfall",name:"Feuerwehrroboter",tier:"early",metric:"Bereits bei echten Einsätzen in den USA; China investiert massiv.",firms:"Thermite (Howe & Howe), Robotnik, DOK-ING",why:"Wärmebild und LiDAR zur Navigation durch Rauch und Dunkelheit."},
+ {cat:"notfall",name:"Katastrophenschutz",tier:"pilot",metric:"Türkei-Erdbeben 2023; Fukushima 2011 als Wendepunkt.",firms:"Boston Dynamics Spot, DARPA",why:"Wärmebild und 3D-Mapping orten Verschüttete in chaotischem Gelände."},
+ {cat:"notfall",name:"Militär & Verteidigung",tier:"prod",metric:"Global Military Robotics 30+ Mrd $ bis 2030; ethisch hochkritisch.",firms:"Baykar (TB2), Boeing Orca, Northrop Grumman",why:"Genau das Behörden-/Verteidigungssegment, in dem westliche und japanische Sensoren China verdrängen."},
+ {cat:"stadt",name:"Müll & Straßenreinigung",tier:"prod",metric:"10× schneller bei der Recycling-Sortierung (China/Singapur).",firms:"AMP Robotics, Gaussian Robotics, The Ocean Cleanup",why:"Vision-KI erkennt und sortiert Material in Echtzeit."},
+ {cat:"stadt",name:"Smart Traffic Management",tier:"prod",metric:"Pittsburgh: 40% weniger Wartezeit an Ampeln.",firms:"Surtrac (CMU), Siemens Mobility, Yunex",why:"Kamera- und Sensornetze als Wahrnehmung der Stadt."},
+ {cat:"stadt",name:"Energienetz-Management",tier:"prod",metric:"Tesla Autobidder handelt Strom autonom; Hornsdale spart 150 Mio $/Jahr.",firms:"Tesla Autobidder, AutoGrid",why:"Eher Netz-Sensorik und Software als LiDAR — Teil des physischen Steuerungs-Layers."},
+ {cat:"service",name:"Hotel- & Service-Roboter",tier:"prod",metric:"In 1.000+ Hotels aktiv; Japan und Singapur führend.",firms:"Relay Robotics, Henn-na Hotel, Miso Flippy",why:"Tiefenkameras und LiDAR-SLAM für die Navigation in belebten Räumen."},
+ {cat:"service",name:"Retail-Roboter",tier:"pilot",metric:"Regalprüfung und kassenloser Checkout (Amazon Go 40+ Läden).",firms:"Simbe, Amazon Go, Ocado",why:"Dichte Kamera-Arrays und Vision-KI im ganzen Laden."},
+ {cat:"service",name:"Food-Delivery-Roboter",tier:"early",metric:"Starship 10 Mio+ Lieferungen; letzte Meile = 50–60% der Kosten.",firms:"Starship, Nuro, Amazon Prime Air",why:"Günstige Kameras und LiDAR auf dem Gehweg — Massen-Stückzahlen kleiner Roboter."},
+ {cat:"service",name:"Sport- & Coaching-Roboter",tier:"frontier",metric:"Biomechanik-Analyse in Echtzeit.",firms:"Tennibot u.a.",why:"Kamera-Tracking und Bewegungssensorik."},
+ {cat:"frontier",name:"Humanoide",tier:"frontier",metric:"Skalierung 2028–2030; Figure 30.000+ bei BMW Spartanburg; China ~90% der Shipments.",firms:"Figure, Tesla Optimus, Unitree, 1X Neo, Apptronik",why:"Das maximale Sensorpaket pro Einheit: mehrere Kameras, oft LiDAR, plus viele Aktoren — der größte Hebel pro Roboter."},
+ {cat:"frontier",name:"Weltraumrobotik",tier:"frontier",metric:"Autonome Raketenlandung; Perseverance autonom auf dem Mars; ClearSpace 2026.",firms:"SpaceX, NASA Perseverance, ClearSpace",why:"LiDAR und Vision für Landung und Andocken ohne menschliches Eingreifen."},
+ {cat:"enabler",name:"Digital Twins",tier:"prod",metric:"Trainingsumgebung für nahezu alle Physical-AI-Roboter.",firms:"NVIDIA Omniverse, Siemens, GE Digital",why:"Wo Roboter ihre Wahrnehmung simuliert lernen, bevor echte Sensoren zum Einsatz kommen."},
+ {cat:"enabler",name:"5G & Telekommunikation",tier:"prod",metric:"Unter 1 ms Latenz für Echtzeit-Robotersteuerung.",firms:"Ericsson, Qualcomm",why:"Das Nervensystem, das Sensorwerte und Befehle in Echtzeit überträgt."},
+ {cat:"enabler",name:"Foundation Models für Robotik",tier:"frontier",metric:"Generalist-Policies; ~20 Demos bis zur Autonomie.",firms:"NVIDIA GR00T/Cosmos, Gemini Robotics, Physical Intelligence (π0)",why:"Das Gehirn, das rohe Sensordaten in Handlungen übersetzt."}
+];
+const ucfilters=document.getElementById("ucfilters"), ucgrid=document.getElementById("ucgrid"), ucdetail=document.getElementById("ucdetail");
+let ucActive="alle", ucSel=null, ucQuery="";
+UCATS.forEach(([k,l])=>{
+  const b=document.createElement("button");
+  b.className="fbtn"+(k==="alle"?" on":""); b.textContent=l; b.dataset.k=k;
+  b.onclick=()=>{ucActive=k; document.querySelectorAll("#ucfilters .fbtn").forEach(x=>x.classList.toggle("on",x.dataset.k===k)); ucSel=null; ucdetail.classList.remove("open"); saveState(); renderUC();};
+  ucfilters.appendChild(b);
+});
+const ucSearch=document.getElementById("ucsearch");
+ucSearch.addEventListener("input",()=>{ucQuery=ucSearch.value.trim().toLowerCase();renderUC();});
+function renderUC(){
+  ucgrid.innerHTML="";
+  const list=USECASES.map((u,i)=>({u,i})).filter(({u})=>(ucActive==="alle"||u.cat===ucActive) &&
+    (ucQuery===""||u.name.toLowerCase().includes(ucQuery)||u.firms.toLowerCase().includes(ucQuery)||CATLABEL[u.cat].toLowerCase().includes(ucQuery)));
+  if(list.length===0){ucgrid.innerHTML='<div class="empty">Kein Use Case gefunden.</div>';return;}
+  list.forEach(({u,i})=>{
+    const t=TIERS[u.tier];
+    const el=document.createElement("div");
+    el.className="card "+t.c; el.dataset.idx=i; el.style.setProperty("--accent",t.col);
+    el.innerHTML=`<div class="uc-cat">${CATLABEL[u.cat]}</div><div class="nm">${u.name}</div>
+      <div class="foot" style="margin-top:12px"><span class="uc-badge">${t.l}</span><span class="go">Details →</span></div>`;
+    el.onclick=()=>showUseCase(i);
+    ucgrid.appendChild(el);
+  });
+}
+renderUC();
+function showUseCase(i){
+  const u=USECASES[i], t=TIERS[u.tier];
+  if(ucSel===i && ucdetail.classList.contains("open")){
+    ucdetail.classList.remove("open"); ucSel=null;
+    document.querySelectorAll("#ucgrid .card").forEach(c=>c.classList.remove("sel")); return;
+  }
+  ucSel=i;
+  document.querySelectorAll("#ucgrid .card").forEach(c=>c.classList.toggle("sel",c.dataset.idx==i));
+  const curveMap={prod:"Heute schon Volumen — trägt die Nachfrage bereits jetzt",early:"Im Hochlauf — kippt gerade von Pilot zu Produktion",pilot:"Frühe Pilotphase — Stückzahlen noch klein",frontier:"Der Hebel ab ~2028 — Frontier, noch Forschung/erste Pilots"};
+  ucdetail.innerHTML=`<div class="pd-inner" style="border-left-color:${t.col}">
+    <div class="pd-tag" style="color:${t.col}">${CATLABEL[u.cat]} · ${t.l}</div>
+    <h4>${u.name}</h4>
+    <dl class="kv"><dt>Status / Kennzahl</dt><dd>${u.metric}</dd></dl>
+    <dl class="kv"><dt>Führende Anbieter</dt><dd>${u.firms}</dd></dl>
+    <dl class="kv"><dt>Auf der Kurve</dt><dd>${curveMap[u.tier]}</dd></dl>
+    <div class="uc-why"><b style="color:${t.col}">Sensor-Bezug:</b> ${u.why}</div>
+  </div>`;
+  ucdetail.classList.add("open"); writeHash("uc="+i);
+  setTimeout(()=>ucdetail.scrollIntoView({behavior:"smooth",block:"nearest"}),60);
+}
+
+// ---- earnings countdown ----
+function renderEarnings(){
+  const box=document.getElementById("earnings"); if(!box)return;
+  const today=new Date(); today.setHours(0,0,0,0);
+  const items=META.earnings.map(e=>{
+    const d=new Date(e.date+"T00:00:00");
+    const days=Math.round((d-today)/86400000);
+    return {...e,d,days};
+  }).sort((a,b)=>a.d-b.d);
+  let html='<div class="elabel">↻ Nächste Berichtstermine (voraussichtlich) — dein Pflicht-Check</div>';
+  items.forEach(e=>{
+    const past=e.days<0;
+    const cls=past?"past":""; const soon=(!past&&e.days<=30)?"soon":"";
+    const cd=past?"gemeldet":(e.days===0?"heute":`in ${e.days} Tagen`);
+    const ds=e.d.toLocaleDateString("de-DE",{day:"2-digit",month:"short",year:"numeric"});
+    html+=`<div class="ecard ${cls}"><div class="ef">${e.firm}</div><div class="ed">${e.note} · ${ds}</div><div class="ec ${soon}">${cd}</div></div>`;
+  });
+  box.innerHTML=html;
+}
+renderEarnings();
+
+// ---- filter state persistence (safe: degrades if storage blocked) ----
+function saveState(){
+  try{localStorage.setItem("robotik-state",JSON.stringify({active,ucActive}));}catch(e){}
+}
+function loadState(){
+  try{
+    const s=JSON.parse(localStorage.getItem("robotik-state")||"{}");
+    if(s.active){active=s.active;document.querySelectorAll("#filters .fbtn").forEach(x=>x.classList.toggle("on",x.dataset.k===s.active));render();}
+    if(s.ucActive){ucActive=s.ucActive;document.querySelectorAll("#ucfilters .fbtn").forEach(x=>x.classList.toggle("on",x.dataset.k===s.ucActive));renderUC();}
+  }catch(e){}
+}
+loadState();
+
+// ---- deep links (share a direct view) ----
+function writeHash(h){ try{history.replaceState(null,"","#"+h);}catch(e){} }
+function handleHash(){
+  const h=location.hash.replace(/^#/,""); if(!h)return;
+  const [k,v]=h.split("=");
+  setTimeout(()=>{
+    if(k==="firm"){const c=COMPANIES.find(x=>x.id===v); if(c){document.getElementById("firmen").scrollIntoView();showFirmInGrid(v);}}
+    else if(k==="uc"){const i=parseInt(v,10); if(USECASES[i]){document.getElementById("usecases").scrollIntoView();showUseCase(i);}}
+    else if(k==="phase"){if(PHASES.find(p=>p.id===v)){document.getElementById("stand").scrollIntoView();openPhase(v);}}
+    else if(k==="layer"){if(STAGES.find(s=>s.key===v)){document.getElementById("kette").scrollIntoView();showLayer(v);}}
+  },300);
+}
+handleHash();
+
+// ---- ambient LiDAR point cloud ----
+(function(){
+  const c=document.getElementById("cloud"), x=c.getContext("2d");
+  let w,h,pts,raf;
+  const reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;
+  function size(){w=c.width=c.offsetWidth*devicePixelRatio;h=c.height=c.offsetHeight*devicePixelRatio;init();}
+  function init(){
+    pts=[];const n=Math.min(220,Math.floor(w*h/18000));
+    for(let i=0;i<n;i++)pts.push({x:Math.random()*w,y:Math.random()*h,z:Math.random(),
+      a:Math.random()*Math.PI*2,s:0.1+Math.random()*0.35});
+  }
+  function draw(t){
+    x.clearRect(0,0,w,h);
+    const sweep=(t*0.00018)%(Math.PI*2);
+    for(const p of pts){
+      p.a+=0.002*p.s; const px=p.x+Math.cos(p.a)*8*p.z, py=p.y+Math.sin(p.a)*8*p.z;
+      const d=Math.abs(((Math.atan2(py-h/2,px-w/2)-sweep+Math.PI*3)%(Math.PI*2))-Math.PI);
+      const glow=Math.max(0,1-d*1.4);
+      const r=(1+p.z*2.4)*devicePixelRatio;
+      x.beginPath();x.arc(px,py,r,0,Math.PI*2);
+      x.fillStyle=`rgba(53,214,232,${0.18+p.z*0.26+glow*0.5})`;x.fill();
+      if(glow>0.4){x.beginPath();x.arc(px,py,r*2.4,0,Math.PI*2);
+        x.fillStyle=`rgba(53,214,232,${glow*0.14})`;x.fill();}
+    }
+    raf=requestAnimationFrame(draw);
+  }
+  size();addEventListener("resize",size);
+  if(reduce){draw(0);} else {draw(0);}
+})();
+</script>
+</body>
+</html>
